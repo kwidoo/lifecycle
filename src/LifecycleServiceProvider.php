@@ -4,13 +4,14 @@ namespace Kwidoo\Lifecycle;
 
 use Illuminate\Support\ServiceProvider;
 use Kwidoo\Lifecycle\Authorizers\DefaultAuthorizer;
+use Kwidoo\Lifecycle\Commands\MakeAuthorizerCommand;
 use Kwidoo\Lifecycle\Contracts\Authorizers\Authorizer;
 use Kwidoo\Lifecycle\Contracts\Authorizers\AuthorizerFactory;
+use Kwidoo\Lifecycle\Contracts\Lifecycle\Eventable;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Lifecycle;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\LifecycleStrategyResolver;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Loggable;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Transactional;
-use Kwidoo\Lifecycle\Contracts\Strategies\EventableStrategy;
 use Kwidoo\Lifecycle\Factories\DefaultAuthorizerFactory;
 use Kwidoo\Lifecycle\Lifecycle\DefaultEventable;
 use Kwidoo\Lifecycle\Lifecycle\DefaultLifecycle;
@@ -60,7 +61,9 @@ class LifecycleServiceProvider extends ServiceProvider
             ], 'lang');*/
 
             // Registering package commands.
-            // $this->commands([]);
+            $this->commands([
+                MakeAuthorizerCommand::class,
+            ]);
         }
     }
 
@@ -78,7 +81,7 @@ class LifecycleServiceProvider extends ServiceProvider
 
         // Register Lifecycle components
         $this->app->bind(Lifecycle::class, DefaultLifecycle::class);
-        $this->app->bind(EventableStrategy::class, DefaultEventable::class);
+        $this->app->bind(Eventable::class, DefaultEventable::class);
         $this->app->bind(Loggable::class, DefaultLoggable::class);
         $this->app->bind(Transactional::class, DefaultTransactional::class);
 
