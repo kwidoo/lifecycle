@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Kwidoo\Lifecycle\Authorizers\DefaultAuthorizer;
 use Kwidoo\Lifecycle\Contracts\Authorizers\Authorizer;
 use Kwidoo\Lifecycle\Contracts\Authorizers\AuthorizerFactory;
+use Kwidoo\Lifecycle\Contracts\Lifecycle\Lifecycle;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\LifecycleStrategyResolver;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Loggable;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Transactional;

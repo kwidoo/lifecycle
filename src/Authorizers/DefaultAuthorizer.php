@@ -2,6 +2,7 @@
 
 namespace Kwidoo\Lifecycle\Authorizers;
 
+use Kwidoo\Lifecycle\Contracts\Authorizers\Authorizer;
 use Spatie\LaravelData\Contracts\BaseData;
 
 class DefaultAuthorizer implements Authorizer

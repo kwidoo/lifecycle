@@ -2,7 +2,7 @@
 
 namespace Kwidoo\Lifecycle\Contracts\Lifecycle;
 
-use  Kwidoo\Lifecycle\Data\LifecycleData;
+use Kwidoo\Lifecycle\Data\LifecycleData;
 
 interface Lifecycle
 {

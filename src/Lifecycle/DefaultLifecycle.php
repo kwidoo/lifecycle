@@ -2,12 +2,11 @@
 
 namespace Kwidoo\Lifecycle\Lifecycle;
 
-use Kwidoo\Lifecycle\Authorizers\AuthorizerFactory;
-use Kwidoo\Lifecycle\Lifecycle\Lifecycle;
-use Kwidoo\Lifecycle\Lifecycle\LifecycleStrategyResolver;
-use  Kwidoo\Lifecycle\Data\LifecycleData;
-
-use App\Data\LifecycleOptionsData;
+use Kwidoo\Lifecycle\Contracts\Authorizers\AuthorizerFactory;
+use Kwidoo\Lifecycle\Contracts\Lifecycle\Lifecycle;
+use Kwidoo\Lifecycle\Contracts\Lifecycle\LifecycleStrategyResolver;
+use Kwidoo\Lifecycle\Data\LifecycleData;
+use Kwidoo\Lifecycle\Data\LifecycleOptionsData;
 
 class DefaultLifecycle implements Lifecycle
 {

@@ -2,9 +2,9 @@
 
 namespace Kwidoo\Lifecycle\Lifecycle;
 
-use Kwidoo\Lifecycle\Strategies\EventableStrategy;
-use Kwidoo\Lifecycle\Strategies\LoggingStrategy;
-use Kwidoo\Lifecycle\Strategies\TransactionStrategy;
+use Kwidoo\Lifecycle\Contracts\Strategies\EventableStrategy;
+use Kwidoo\Lifecycle\Contracts\Strategies\LoggingStrategy;
+use Kwidoo\Lifecycle\Contracts\Strategies\TransactionStrategy;
 
 class LifecycleStrategies
 {
