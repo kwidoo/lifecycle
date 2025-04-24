@@ -2,7 +2,6 @@
 
 namespace Kwidoo\Lifecycle\Strategies;
 
-
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Loggable;
 use Kwidoo\Lifecycle\Contracts\Strategies\LoggingStrategy;
 use Kwidoo\Lifecycle\Data\LifecycleData;

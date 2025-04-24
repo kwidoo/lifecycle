@@ -13,5 +13,7 @@ class DefaultAuthorizer implements Authorizer
      *
      * @return void
      */
-    public function authorize(string $ability, ?BaseData $context = null): void {}
+    public function authorize(string $ability, ?BaseData $context = null): void
+    {
+    }
 }

@@ -7,7 +7,9 @@ use Kwidoo\Lifecycle\Contracts\Lifecycle\Eventable;
 
 class DefaultEventable implements Eventable
 {
-    public function __construct(protected Dispatcher $dispatcher) {}
+    public function __construct(protected Dispatcher $dispatcher)
+    {
+    }
 
     /**
      * @param string

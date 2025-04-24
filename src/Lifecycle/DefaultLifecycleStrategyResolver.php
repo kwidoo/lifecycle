@@ -10,13 +10,12 @@ class DefaultLifecycleStrategyResolver implements LifecycleStrategyResolver
     public function __construct(
         /** @var array<bool, EventableStrategy> */
         protected array $eventableStrategies,
-
         /** @var array<bool, LoggingStrategy> */
         protected array $loggingStrategies,
-
         /** @var array<bool, TransactionStrategy> */
         protected array $transactionStrategies,
-    ) {}
+    ) {
+    }
 
     public function resolve(LifecycleOptionsData $options): LifecycleStrategies
     {

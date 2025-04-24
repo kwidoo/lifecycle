@@ -17,7 +17,7 @@ class DefaultTransactionalTest extends TestCase
         $dbManager = Mockery::mock(DatabaseManager::class);
         $dbManager->shouldReceive('transaction')
             ->once()
-            ->withArgs(function($callback) {
+            ->withArgs(function ($callback) {
                 return is_callable($callback);
             })
             ->andReturn('result');

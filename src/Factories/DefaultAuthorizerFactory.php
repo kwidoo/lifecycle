@@ -3,7 +3,6 @@
 namespace Kwidoo\Lifecycle\Factories;
 
 use Illuminate\Contracts\Container\Container;
-
 use Kwidoo\Lifecycle\Authorizers\DefaultAuthorizer;
 use Kwidoo\Lifecycle\Contracts\Authorizers\Authorizer;
 use Kwidoo\Lifecycle\Contracts\Authorizers\AuthorizerFactory;
@@ -12,7 +11,8 @@ class DefaultAuthorizerFactory implements AuthorizerFactory
 {
     public function __construct(
         protected Container $container
-    ) {}
+    ) {
+    }
 
     /**
      * @param string $context

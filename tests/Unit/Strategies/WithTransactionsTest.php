@@ -24,7 +24,7 @@ class WithTransactionsTest extends TestCase
         $transactional->shouldReceive('run')
             ->once()
             ->with(Mockery::type('Closure'))
-            ->andReturnUsing(function($cb) {
+            ->andReturnUsing(function ($cb) {
                 return $cb();
             });
 
@@ -68,7 +68,7 @@ class WithTransactionsTest extends TestCase
         $transactional->shouldReceive('run')
             ->once()
             ->with(Mockery::type('Closure'))
-            ->andReturnUsing(function($cb) {
+            ->andReturnUsing(function ($cb) {
                 return $cb();
             });
 

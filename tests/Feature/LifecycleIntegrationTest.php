@@ -18,7 +18,8 @@ class TestEntityData extends Data
     public function __construct(
         public int $id = 1,
         public string $name = 'Test Entity'
-    ) {}
+    ) {
+    }
 }
 
 class LifecycleIntegrationTest extends TestCase
@@ -103,7 +104,7 @@ class LifecycleIntegrationTest extends TestCase
 
         // Act & Assert
         try {
-            $lifecycle->run($data, function() use ($exception) {
+            $lifecycle->run($data, function () use ($exception) {
                 throw $exception;
             }, $options);
 

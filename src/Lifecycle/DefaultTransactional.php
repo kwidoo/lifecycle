@@ -7,8 +7,9 @@ use Kwidoo\Lifecycle\Contracts\Lifecycle\Transactional;
 
 class DefaultTransactional implements Transactional
 {
-
-    public function __construct(protected DatabaseManager $db) {}
+    public function __construct(protected DatabaseManager $db)
+    {
+    }
 
     /**
      * @param callable $callback

@@ -9,7 +9,8 @@ class WithoutTransactions implements TransactionStrategy
 {
     public function __construct(
         protected Transactional $transactional
-    ) {}
+    ) {
+    }
 
     /**
      * @param callable $callback

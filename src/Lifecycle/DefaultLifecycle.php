@@ -13,7 +13,8 @@ class DefaultLifecycle implements Lifecycle
     public function __construct(
         protected AuthorizerFactory $authorizerFactory,
         protected LifecycleStrategyResolver $resolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @param LifecycleData $data

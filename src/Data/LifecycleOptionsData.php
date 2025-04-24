@@ -11,7 +11,8 @@ class LifecycleOptionsData extends Data
         public bool $eventsEnabled = true,
         public bool $trxEnabled = true,
         public bool $loggingEnabled = true,
-    ) {}
+    ) {
+    }
 
     /**
      * @return self

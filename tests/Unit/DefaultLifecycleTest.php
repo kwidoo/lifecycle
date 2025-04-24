@@ -22,7 +22,8 @@ class TestRequestData extends Data
     public function __construct(
         public int $id = 1,
         public string $name = 'Test'
-    ) {}
+    ) {
+    }
 }
 
 class DefaultLifecycleTest extends TestCase

@@ -8,7 +8,9 @@ use Kwidoo\Lifecycle\Data\LifecycleData;
 
 class WithEvents implements EventableStrategy
 {
-    public function __construct(protected Eventable $eventable) {}
+    public function __construct(protected Eventable $eventable)
+    {
+    }
 
     /**
      * @param string $action

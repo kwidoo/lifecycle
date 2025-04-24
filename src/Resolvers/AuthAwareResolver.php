@@ -10,7 +10,8 @@ class AuthAwareResolver
     public function __construct(
         protected AuthFactory $auth,
         protected Container $container
-    ) {}
+    ) {
+    }
 
     public function resolve($unauthenticated, $authenticated = null, ?string $guard = null)
     {

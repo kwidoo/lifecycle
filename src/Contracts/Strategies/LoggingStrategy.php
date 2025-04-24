@@ -4,7 +4,6 @@ namespace Kwidoo\Lifecycle\Contracts\Strategies;
 
 use  Kwidoo\Lifecycle\Data\LifecycleData;
 
-
 interface LoggingStrategy
 {
     /**

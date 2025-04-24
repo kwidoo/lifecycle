@@ -12,7 +12,8 @@ class TestData extends Data
 {
     public function __construct(
         public string $name = 'test'
-    ) {}
+    ) {
+    }
 }
 
 class DefaultAuthorizerTest extends TestCase

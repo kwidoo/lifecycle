@@ -12,5 +12,6 @@ class LifecycleStrategies
         public EventableStrategy $eventable,
         public TransactionStrategy $transactional,
         public LoggingStrategy $loggable,
-    ) {}
+    ) {
+    }
 }

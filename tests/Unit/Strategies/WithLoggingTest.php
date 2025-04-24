@@ -15,7 +15,8 @@ class TestLogData extends Data
 {
     public function __construct(
         public string $name = 'test'
-    ) {}
+    ) {
+    }
 }
 
 class WithLoggingTest extends TestCase
@@ -70,7 +71,7 @@ class WithLoggingTest extends TestCase
             ->with('before.User.create', [$data->context]);
 
         // The callback will throw an exception
-        $callback = function() use ($exception) {
+        $callback = function () use ($exception) {
             throw $exception;
         };
 
