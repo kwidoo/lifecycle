@@ -1,8 +1,8 @@
 # Lifecycle
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/kwidoo/lifecycle.svg?style=flat-square)](https://packagist.org/packages/kwidoo/lifecycle)
-[![Build Status](https://img.shields.io/travis/kwidoo/lifecycle/master.svg?style=flat-square)](https://travis-ci.org/kwidoo/lifecycle)
-[![Quality Score](https://img.shields.io/scrutinizer/g/kwidoo/lifecycle.svg?style=flat-square)](https://scrutinizer-ci.com/g/kwidoo/lifecycle)
+[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/kwidoo/lifecycle/Tests?label=tests)](https://github.com/kwidoo/lifecycle/actions?query=workflow%3ATests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/kwidoo/lifecycle/Code%20Style?label=code%20style)](https://github.com/kwidoo/lifecycle/actions?query=workflow%3A"Code+Style"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/kwidoo/lifecycle.svg?style=flat-square)](https://packagist.org/packages/kwidoo/lifecycle)
 
 A Laravel package that provides a flexible lifecycle management system for your application operations. This package helps you implement consistent patterns for handling events, transactions, logging, and authorization across your Laravel application.
@@ -140,6 +140,14 @@ You can create custom strategies for events, logging, or transactions by impleme
 ```bash
 composer test
 ```
+
+The package includes comprehensive test coverage for all components including:
+
+- Unit tests for all service components
+- Strategy implementation tests
+- Feature/integration tests demonstrating real-world use cases
+
+Tests are automatically run via GitHub Actions when code is pushed to the repository.
 
 ## Changelog
 

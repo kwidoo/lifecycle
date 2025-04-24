@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<ruleset name="Laravel Package Coding Standards">
+    <description>PSR-12 coding standards for Laravel packages</description>
+
+    <file>src</file>
+    <file>tests</file>
+
+    <arg name="basepath" value="."/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="80"/>
+    <arg name="cache" value=".phpcs-cache"/>
+    <arg value="p"/>
+
+    <rule ref="PSR12"/>
+
+    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+</ruleset>
