@@ -1,7 +1,7 @@
 # Lifecycle
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/kwidoo/lifecycle.svg?style=flat-square)](https://packagist.org/packages/kwidoo/lifecycle)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/kwidoo/lifecycle/Tests?label=tests)](https://github.com/kwidoo/lifecycle/actions?query=workflow%3ATests+branch%3Amain)
+[![Tests](https://github.com/kwidoo/lifecycle/actions/workflows/tests.yml/badge.svg)](https://github.com/kwidoo/lifecycle/actions/workflows/tests.yml)
 [![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/kwidoo/lifecycle/Code%20Style?label=code%20style)](https://github.com/kwidoo/lifecycle/actions?query=workflow%3A"Code+Style"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/kwidoo/lifecycle.svg?style=flat-square)](https://packagist.org/packages/kwidoo/lifecycle)
 
