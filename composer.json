@@ -1,0 +1,54 @@
+{
+    "name": "kwidoo/lifecycle",
+    "description": "Lifecycle for my Laravel apps",
+    "keywords": [
+        "kwidoo",
+        "lifecycle"
+    ],
+    "homepage": "https://github.com/kwidoo/lifecycle",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Oleg Pashkovsky",
+            "email": "oleg@pashkovsky.me",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0",
+        "illuminate/support": "^8.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.0",
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kwidoo\\Lifecycle\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kwidoo\\Lifecycle\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Kwidoo\\Lifecycle\\LifecycleServiceProvider"
+            ],
+            "aliases": {
+                "Lifecycle": "Kwidoo\\Lifecycle\\LifecycleFacade"
+            }
+        }
+    }
+}
