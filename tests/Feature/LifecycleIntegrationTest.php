@@ -2,25 +2,15 @@
 
 namespace Kwidoo\Lifecycle\Tests\Feature;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Log\LogManager;
 use Illuminate\Support\Facades\Event;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Lifecycle;
 use Kwidoo\Lifecycle\Data\LifecycleData;
 use Kwidoo\Lifecycle\Data\LifecycleOptionsData;
+use Kwidoo\Lifecycle\Tests\Data\TestEntityData;
 use Kwidoo\Lifecycle\Tests\TestCase;
 use Mockery;
 use Psr\Log\LoggerInterface;
-use Spatie\LaravelData\Data;
-
-class TestEntityData extends Data
-{
-    public function __construct(
-        public int $id = 1,
-        public string $name = 'Test Entity'
-    ) {
-    }
-}
 
 class LifecycleIntegrationTest extends TestCase
 {

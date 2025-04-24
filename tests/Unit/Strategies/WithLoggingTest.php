@@ -6,18 +6,10 @@ use Exception;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Loggable;
 use Kwidoo\Lifecycle\Data\LifecycleData;
 use Kwidoo\Lifecycle\Strategies\WithLogging;
+use Kwidoo\Lifecycle\Tests\Data\TestLogData;
 use Kwidoo\Lifecycle\Tests\TestCase;
 use Mockery;
 use Mockery\MockInterface;
-use Spatie\LaravelData\Data;
-
-class TestLogData extends Data
-{
-    public function __construct(
-        public string $name = 'test'
-    ) {
-    }
-}
 
 class WithLoggingTest extends TestCase
 {

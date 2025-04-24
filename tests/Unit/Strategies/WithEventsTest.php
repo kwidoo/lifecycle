@@ -6,18 +6,10 @@ use Illuminate\Support\Facades\Event;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Eventable;
 use Kwidoo\Lifecycle\Data\LifecycleData;
 use Kwidoo\Lifecycle\Strategies\WithEvents;
+use Kwidoo\Lifecycle\Tests\Data\TestEventData;
 use Kwidoo\Lifecycle\Tests\TestCase;
 use Mockery;
 use Mockery\MockInterface;
-use Spatie\LaravelData\Data;
-
-class TestEventData extends Data
-{
-    public function __construct(
-        public string $name = 'test'
-    ) {
-    }
-}
 
 class WithEventsTest extends TestCase
 {

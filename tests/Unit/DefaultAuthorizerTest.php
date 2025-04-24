@@ -2,19 +2,9 @@
 
 namespace Kwidoo\Lifecycle\Tests\Unit;
 
-use Illuminate\Contracts\Auth\Access\Gate;
 use Kwidoo\Lifecycle\Authorizers\DefaultAuthorizer;
+use Kwidoo\Lifecycle\Tests\Data\TestData;
 use Kwidoo\Lifecycle\Tests\TestCase;
-use Mockery;
-use Spatie\LaravelData\Data;
-
-class TestData extends Data
-{
-    public function __construct(
-        public string $name = 'test'
-    ) {
-    }
-}
 
 class DefaultAuthorizerTest extends TestCase
 {

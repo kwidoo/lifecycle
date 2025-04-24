@@ -13,18 +13,9 @@ use Kwidoo\Lifecycle\Data\LifecycleData;
 use Kwidoo\Lifecycle\Data\LifecycleOptionsData;
 use Kwidoo\Lifecycle\Lifecycle\DefaultLifecycle;
 use Kwidoo\Lifecycle\Lifecycle\LifecycleStrategies;
+use Kwidoo\Lifecycle\Tests\Data\TestRequestData;
 use Kwidoo\Lifecycle\Tests\TestCase;
 use Mockery;
-use Spatie\LaravelData\Data;
-
-class TestRequestData extends Data
-{
-    public function __construct(
-        public int $id = 1,
-        public string $name = 'Test'
-    ) {
-    }
-}
 
 class DefaultLifecycleTest extends TestCase
 {
