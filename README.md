@@ -2,7 +2,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/kwidoo/lifecycle.svg?style=flat-square)](https://packagist.org/packages/kwidoo/lifecycle)
 [![Tests](https://github.com/kwidoo/lifecycle/actions/workflows/tests.yml/badge.svg)](https://github.com/kwidoo/lifecycle/actions/workflows/tests.yml)
-[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/kwidoo/lifecycle/Code%20Style?label=code%20style)](https://github.com/kwidoo/lifecycle/actions?query=workflow%3A"Code+Style"+branch%3Amain)
+[![Code Style](https://github.com/kwidoo/lifecycle/actions/workflows/code-style.yml/badge.svg)](https://github.com/kwidoo/lifecycle/actions/workflows/code-style.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/kwidoo/lifecycle.svg?style=flat-square)](https://packagist.org/packages/kwidoo/lifecycle)
 
 A Laravel package that provides a flexible lifecycle management system for your application operations. This package helps you implement consistent patterns for handling events, transactions, logging, and authorization across your Laravel application.
