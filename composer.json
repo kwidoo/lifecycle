@@ -16,8 +16,11 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
-        "illuminate/support": "^8.0"
+        "php": "^8.0",
+        "spatie/laravel-data": "^4.15",
+        "league/fractal": "^0.20.2",
+        "prettus/l5-repository": "^2.10",
+        "illuminate/support": "^12.0"
     },
     "require-dev": {
         "orchestra/testbench": "^6.0",
@@ -36,7 +39,6 @@
     "scripts": {
         "test": "vendor/bin/phpunit",
         "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
-
     },
     "config": {
         "sort-packages": true
