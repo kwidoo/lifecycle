@@ -10,11 +10,12 @@ use Kwidoo\Lifecycle\Tests\Data\TestLogData;
 use Kwidoo\Lifecycle\Tests\TestCase;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
 
 class WithLoggingTest extends TestCase
 {
-    /** @test */
-    public function it_logs_before_and_after_execution()
+    #[Test]
+    public function test_logs_before_and_after_execution()
     {
         // Arrange
         $loggable = $this->mockLoggable();
@@ -43,8 +44,8 @@ class WithLoggingTest extends TestCase
         $this->assertEquals('result', $result);
     }
 
-    /** @test */
-    public function it_handles_exceptions_properly()
+    #[Test]
+    public function test_handles_exceptions_properly()
     {
         // Arrange
         $loggable = $this->mockLoggable();

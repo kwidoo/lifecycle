@@ -7,10 +7,12 @@ use Illuminate\Support\Facades\Event;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Lifecycle;
 use Kwidoo\Lifecycle\Data\LifecycleData;
 use Kwidoo\Lifecycle\Data\LifecycleOptionsData;
+use Kwidoo\Lifecycle\Factories\LifecycleMiddlewareFactory;
 use Kwidoo\Lifecycle\Tests\Data\TestEntityData;
 use Kwidoo\Lifecycle\Tests\TestCase;
 use Mockery;
 use Psr\Log\LoggerInterface;
+use PHPUnit\Framework\Attributes\Test;
 
 class LifecycleIntegrationTest extends TestCase
 {
@@ -39,11 +41,20 @@ class LifecycleIntegrationTest extends TestCase
 
         $this->app->instance(LogManager::class, $logManager);
 
+        // Make sure the app can resolve the LifecycleMiddlewareFactory
+        if (!$this->app->bound(LifecycleMiddlewareFactory::class)) {
+            $this->app->bind(LifecycleMiddlewareFactory::class, function ($app) {
+                return new LifecycleMiddlewareFactory(
+                    $app->make('Kwidoo\Lifecycle\Contracts\Lifecycle\LifecycleStrategyResolver')
+                );
+            });
+        }
+
         Event::fake();
     }
 
-    /** @test */
-    public function it_can_execute_a_complete_lifecycle_operation()
+    #[Test]
+    public function test_can_execute_a_complete_lifecycle_operation()
     {
         // Arrange
         $lifecycle = $this->app->make(Lifecycle::class);
@@ -72,8 +83,8 @@ class LifecycleIntegrationTest extends TestCase
         Event::assertDispatched('after.TestEntity.retrieve');
     }
 
-    /** @test */
-    public function it_handles_errors_properly_in_lifecycle()
+    #[Test]
+    public function test_handles_errors_properly_in_lifecycle()
     {
         // Arrange
         $lifecycle = $this->app->make(Lifecycle::class);
@@ -109,8 +120,8 @@ class LifecycleIntegrationTest extends TestCase
         }
     }
 
-    /** @test */
-    public function it_supports_disabling_all_features()
+    #[Test]
+    public function test_supports_disabling_all_features()
     {
         // Arrange
         $lifecycle = $this->app->make(Lifecycle::class);

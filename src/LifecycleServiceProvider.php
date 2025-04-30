@@ -2,6 +2,7 @@
 
 namespace Kwidoo\Lifecycle;
 
+use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\ServiceProvider;
 use Kwidoo\Lifecycle\Authorizers\DefaultAuthorizer;
 use Kwidoo\Lifecycle\Commands\MakeAuthorizerCommand;
@@ -13,6 +14,7 @@ use Kwidoo\Lifecycle\Contracts\Lifecycle\LifecycleStrategyResolver;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Loggable;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Transactional;
 use Kwidoo\Lifecycle\Factories\DefaultAuthorizerFactory;
+use Kwidoo\Lifecycle\Factories\LifecycleMiddlewareFactory;
 use Kwidoo\Lifecycle\Lifecycle\DefaultEventable;
 use Kwidoo\Lifecycle\Lifecycle\DefaultLifecycle;
 use Kwidoo\Lifecycle\Lifecycle\DefaultLifecycleStrategyResolver;
@@ -78,6 +80,18 @@ class LifecycleServiceProvider extends ServiceProvider
         // Register Authorizer components
         $this->app->bind(Authorizer::class, DefaultAuthorizer::class);
         $this->app->bind(AuthorizerFactory::class, DefaultAuthorizerFactory::class);
+
+        // Register Pipeline
+        $this->app->bind(Pipeline::class, function ($app) {
+            return new Pipeline($app);
+        });
+
+        // Register LifecycleMiddlewareFactory
+        $this->app->bind(LifecycleMiddlewareFactory::class, function ($app) {
+            return new LifecycleMiddlewareFactory(
+                $app->make(LifecycleStrategyResolver::class)
+            );
+        });
 
         // Register Lifecycle components
         $this->app->bind(Lifecycle::class, DefaultLifecycle::class);

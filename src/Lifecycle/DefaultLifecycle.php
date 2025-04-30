@@ -2,23 +2,27 @@
 
 namespace Kwidoo\Lifecycle\Lifecycle;
 
+use Illuminate\Pipeline\Pipeline;
 use Kwidoo\Lifecycle\Contracts\Authorizers\AuthorizerFactory;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Lifecycle;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\LifecycleStrategyResolver;
 use Kwidoo\Lifecycle\Data\LifecycleData;
 use Kwidoo\Lifecycle\Data\LifecycleOptionsData;
+use Kwidoo\Lifecycle\Factories\LifecycleMiddlewareFactory;
 
 class DefaultLifecycle implements Lifecycle
 {
     public function __construct(
         protected AuthorizerFactory $authorizerFactory,
         protected LifecycleStrategyResolver $resolver,
-    ) {
-    }
+        protected Pipeline $pipeline,
+        protected LifecycleMiddlewareFactory $middlewareFactory,
+    ) {}
 
     /**
      * @param LifecycleData $data
      * @param callable $callback
+     * @param mixed $options
      *
      * @return mixed
      */
@@ -29,22 +33,10 @@ class DefaultLifecycle implements Lifecycle
             $this->authorize($data);
         }
 
-        $strategies = $this->resolver->resolve($options);
-        try {
-            return $strategies->eventable->executeEvents(
-                $data,
-                fn() => $strategies->loggable->executeLogging(
-                    $data,
-                    fn() => $strategies->transactional->executeTransactions(
-                        fn() => $callback($data)
-                    )
-                )
-            );
-        } catch (\Throwable $e) {
-            $strategies->eventable->dispatchError($data);
-            $strategies->loggable->dispatchError($data);
-            throw $e;
-        }
+        return $this->pipeline
+            ->send($data)
+            ->through($this->middlewareFactory->forOptions($options))
+            ->then(fn($data) => $callback($data));
     }
 
     /**

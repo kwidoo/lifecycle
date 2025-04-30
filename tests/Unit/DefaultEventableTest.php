@@ -6,11 +6,12 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Kwidoo\Lifecycle\Lifecycle\DefaultEventable;
 use Kwidoo\Lifecycle\Tests\TestCase;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 
 class DefaultEventableTest extends TestCase
 {
-    /** @test */
-    public function it_dispatches_events()
+    #[Test]
+    public function test_dispatches_events()
     {
         // Arrange
         $dispatcher = Mockery::mock(Dispatcher::class);

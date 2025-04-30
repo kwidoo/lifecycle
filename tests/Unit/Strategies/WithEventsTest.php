@@ -10,6 +10,7 @@ use Kwidoo\Lifecycle\Tests\Data\TestEventData;
 use Kwidoo\Lifecycle\Tests\TestCase;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
 
 class WithEventsTest extends TestCase
 {
@@ -19,8 +20,8 @@ class WithEventsTest extends TestCase
         Event::fake();
     }
 
-    /** @test */
-    public function it_dispatches_before_and_after_events()
+    #[Test]
+    public function test_dispatches_before_and_after_events()
     {
         // Arrange
         $eventable = $this->mockEventable();
@@ -49,8 +50,8 @@ class WithEventsTest extends TestCase
         $this->assertEquals('result', $result);
     }
 
-    /** @test */
-    public function it_handles_exceptions_properly()
+    #[Test]
+    public function test_handles_exceptions_properly()
     {
         // Arrange
         $eventable = $this->mockEventable();

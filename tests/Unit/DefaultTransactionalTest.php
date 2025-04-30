@@ -7,11 +7,12 @@ use Illuminate\Database\DatabaseManager;
 use Kwidoo\Lifecycle\Lifecycle\DefaultTransactional;
 use Kwidoo\Lifecycle\Tests\TestCase;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 
 class DefaultTransactionalTest extends TestCase
 {
-    /** @test */
-    public function it_begins_commits_and_returns_result_when_successful()
+    #[Test]
+    public function test_begins_commits_and_returns_result_when_successful()
     {
         // Arrange
         $dbManager = Mockery::mock(DatabaseManager::class);
@@ -32,8 +33,8 @@ class DefaultTransactionalTest extends TestCase
         $this->assertEquals('result', $result);
     }
 
-    /** @test */
-    public function it_rolls_back_and_throws_exception_when_failed()
+    #[Test]
+    public function test_rolls_back_and_throws_exception_when_failed()
     {
         // Arrange
         $exception = new Exception('Transaction failed');

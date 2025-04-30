@@ -5,11 +5,12 @@ namespace Kwidoo\Lifecycle\Tests\Unit;
 use Kwidoo\Lifecycle\Authorizers\DefaultAuthorizer;
 use Kwidoo\Lifecycle\Tests\Data\TestData;
 use Kwidoo\Lifecycle\Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class DefaultAuthorizerTest extends TestCase
 {
-    /** @test */
-    public function it_calls_authorize_with_data_object()
+    #[Test]
+    public function test_calls_authorize_with_data_object()
     {
         // Arrange
         $authorizer = new DefaultAuthorizer();
@@ -22,8 +23,8 @@ class DefaultAuthorizerTest extends TestCase
         $this->assertTrue(true); // Just to have an assertion
     }
 
-    /** @test */
-    public function it_allows_null_context()
+    #[Test]
+    public function test_allows_null_context()
     {
         // Arrange
         $authorizer = new DefaultAuthorizer();

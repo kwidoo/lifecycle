@@ -8,11 +8,12 @@ use Kwidoo\Lifecycle\Strategies\WithTransactions;
 use Kwidoo\Lifecycle\Tests\TestCase;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
 
 class WithTransactionsTest extends TestCase
 {
-    /** @test */
-    public function it_wraps_operation_in_transaction()
+    #[Test]
+    public function test_wraps_operation_in_transaction()
     {
         // Arrange
         $transactional = $this->mockTransactional();
@@ -35,8 +36,8 @@ class WithTransactionsTest extends TestCase
         $this->assertEquals('result', $result);
     }
 
-    /** @test */
-    public function it_passes_exception_from_transaction()
+    #[Test]
+    public function test_passes_exception_from_transaction()
     {
         // Arrange
         $transactional = $this->mockTransactional();
@@ -55,8 +56,8 @@ class WithTransactionsTest extends TestCase
         $strategy->executeTransactions($callback);
     }
 
-    /** @test */
-    public function it_uses_default_connection_when_not_specified()
+    #[Test]
+    public function test_uses_default_connection_when_not_specified()
     {
         // Arrange
         $transactional = $this->mockTransactional();

@@ -7,11 +7,12 @@ use Psr\Log\LoggerInterface;
 use Kwidoo\Lifecycle\Lifecycle\DefaultLoggable;
 use Kwidoo\Lifecycle\Tests\TestCase;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 
 class DefaultLoggableTest extends TestCase
 {
-    /** @test */
-    public function it_logs_info_messages()
+    #[Test]
+    public function test_logs_info_messages()
     {
         // Arrange
         $logger = Mockery::mock(LoggerInterface::class);
@@ -31,8 +32,8 @@ class DefaultLoggableTest extends TestCase
         $loggable->info('Test message', ['context' => 'data']);
     }
 
-    /** @test */
-    public function it_logs_error_messages()
+    #[Test]
+    public function test_logs_error_messages()
     {
         // Arrange
         $logger = Mockery::mock(LoggerInterface::class);
@@ -52,8 +53,8 @@ class DefaultLoggableTest extends TestCase
         $loggable->error('Error message', ['error' => 'data']);
     }
 
-    /** @test */
-    public function it_logs_debug_messages()
+    #[Test]
+    public function test_logs_debug_messages()
     {
         // Arrange
         $logger = Mockery::mock(LoggerInterface::class);

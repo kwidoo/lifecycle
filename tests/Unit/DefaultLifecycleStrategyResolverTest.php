@@ -16,11 +16,12 @@ use Kwidoo\Lifecycle\Strategies\WithoutLogging;
 use Kwidoo\Lifecycle\Strategies\WithoutTransactions;
 use Kwidoo\Lifecycle\Tests\TestCase;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 
 class DefaultLifecycleStrategyResolverTest extends TestCase
 {
-    /** @test */
-    public function it_resolves_strategies_with_events_enabled()
+    #[Test]
+    public function test_resolves_strategies_with_events_enabled()
     {
         // Arrange
         $withEvents = Mockery::mock(WithEvents::class);
@@ -54,8 +55,8 @@ class DefaultLifecycleStrategyResolverTest extends TestCase
         $this->assertSame($withEvents, $strategies->eventable);
     }
 
-    /** @test */
-    public function it_resolves_strategies_with_events_disabled()
+    #[Test]
+    public function test_resolves_strategies_with_events_disabled()
     {
         // Arrange
         $withEvents = Mockery::mock(WithEvents::class);
@@ -89,8 +90,8 @@ class DefaultLifecycleStrategyResolverTest extends TestCase
         $this->assertSame($withoutEvents, $strategies->eventable);
     }
 
-    /** @test */
-    public function it_resolves_logging_strategies()
+    #[Test]
+    public function test_resolves_logging_strategies()
     {
         // Arrange
         $eventableStrategy = Mockery::mock(EventableStrategy::class);
@@ -128,8 +129,8 @@ class DefaultLifecycleStrategyResolverTest extends TestCase
         $this->assertSame($withoutLogging, $strategies2->loggable);
     }
 
-    /** @test */
-    public function it_resolves_transaction_strategies()
+    #[Test]
+    public function test_resolves_transaction_strategies()
     {
         // Arrange
         $eventableStrategy = Mockery::mock(EventableStrategy::class);
