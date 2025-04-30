@@ -13,7 +13,8 @@ class LifecycleMiddlewareFactory
 {
     public function __construct(
         protected LifecycleStrategyResolver $resolver
-    ) {}
+    ) {
+    }
 
     public function forOptions(LifecycleOptionsData $options): array
     {

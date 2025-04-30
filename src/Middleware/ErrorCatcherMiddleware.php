@@ -10,7 +10,8 @@ class ErrorCatcherMiddleware
 {
     public function __construct(
         protected LifecycleStrategies $strategies
-    ) {}
+    ) {
+    }
 
     public function handle(LifecycleData $data, Closure $next): mixed
     {

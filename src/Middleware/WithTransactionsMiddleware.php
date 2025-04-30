@@ -10,7 +10,8 @@ class WithTransactionsMiddleware
 {
     public function __construct(
         protected TransactionStrategy $strategy
-    ) {}
+    ) {
+    }
 
     public function handle(LifecycleData $data, Closure $next): mixed
     {

@@ -10,7 +10,8 @@ class WithEventsMiddleware
 {
     public function __construct(
         protected EventableStrategy $strategy
-    ) {}
+    ) {
+    }
 
     public function handle(LifecycleData $data, Closure $next): mixed
     {

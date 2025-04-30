@@ -10,7 +10,8 @@ class WithLoggingMiddleware
 {
     public function __construct(
         protected LoggingStrategy $strategy
-    ) {}
+    ) {
+    }
 
     public function handle(LifecycleData $data, Closure $next): mixed
     {

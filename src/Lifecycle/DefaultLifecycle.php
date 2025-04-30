@@ -17,7 +17,8 @@ class DefaultLifecycle implements Lifecycle
         protected LifecycleStrategyResolver $resolver,
         protected Pipeline $pipeline,
         protected LifecycleMiddlewareFactory $middlewareFactory,
-    ) {}
+    ) {
+    }
 
     /**
      * @param LifecycleData $data
