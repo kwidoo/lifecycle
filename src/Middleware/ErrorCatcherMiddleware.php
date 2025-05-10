@@ -3,24 +3,33 @@
 namespace Kwidoo\Lifecycle\Middleware;
 
 use Closure;
+use Kwidoo\Lifecycle\Contracts\Strategies\ErrorStrategy;
+use Kwidoo\Lifecycle\Data\LifecycleContextData;
 use Kwidoo\Lifecycle\Data\LifecycleData;
-use Kwidoo\Lifecycle\Lifecycle\LifecycleStrategies;
 
 class ErrorCatcherMiddleware
 {
+    /**
+     * @param ErrorStrategy $errorStrategy
+     */
     public function __construct(
-        protected LifecycleStrategies $strategies
-    ) {
-    }
+        protected ErrorStrategy $errorStrategy
+    ) {}
 
-    public function handle(LifecycleData $data, Closure $next): mixed
+    /**
+     * Handle the lifecycle request and catch any errors
+     *
+     * @param LifecycleContextData|LifecycleData $data
+     * @param Closure $next
+     * @return mixed
+     * @throws \Throwable
+     */
+    public function handle(LifecycleContextData|LifecycleData $data, Closure $next): mixed
     {
         try {
             return $next($data);
         } catch (\Throwable $e) {
-            $this->strategies->eventable->dispatchError($data);
-            $this->strategies->loggable->dispatchError($data);
-            throw $e;
+            return $this->errorStrategy->handleError($data, $e);
         }
     }
 }

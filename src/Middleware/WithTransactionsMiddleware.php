@@ -10,11 +10,10 @@ class WithTransactionsMiddleware
 {
     public function __construct(
         protected TransactionStrategy $strategy
-    ) {
-    }
+    ) {}
 
     public function handle(LifecycleData $data, Closure $next): mixed
     {
-        return $this->strategy->executeTransactions(fn() => $next($data));
+        return $this->strategy->execute(fn() => $next($data));
     }
 }

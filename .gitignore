@@ -9,3 +9,9 @@ composer.lock
 /.DS_Store
 /.phpunit.result.cache
 /.php-cs-fixer.cache
+concat1.sh
+docs.zip
+generate-refactor-stubs.sh
+larastan-report.json
+prepare-lifecycle-review.sh
+concat.sh

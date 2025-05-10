@@ -13,7 +13,9 @@ class MakeAuthorizerCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'make:authorizer {name : The name of the authorizer}';
+    protected $signature = 'make:authorizer
+                            {name : The name of the authorizer}
+                            {--path= : The path where the authorizer should be created}';
 
     /**
      * The console command description.
@@ -55,7 +57,14 @@ class MakeAuthorizerCommand extends Command
             $name .= 'Authorizer';
         }
 
-        $path = app_path('Authorizers/' . $name . '.php');
+        $customPath = $this->option('path');
+        if ($customPath) {
+            $path = rtrim($customPath, '/') . '/' . $name . '.php';
+            $namespace = $this->getNamespaceFromPath($customPath);
+        } else {
+            $path = app_path('Authorizers/' . $name . '.php');
+            $namespace = 'App\\Authorizers';
+        }
 
         // Create the directory if it doesn't exist
         $directory = dirname($path);
@@ -68,9 +77,16 @@ class MakeAuthorizerCommand extends Command
             return 1;
         }
 
-        $this->makeAuthorizer($name, $path);
+        $this->makeAuthorizer($name, $path, $namespace);
 
-        $this->info("Authorizer {$name} created successfully.");
+        $this->info("✓ Authorizer created successfully.");
+        $this->line("  <info>Authorizer class:</info> {$namespace}\\{$name}");
+        $this->line("  <info>File location:</info> {$path}");
+
+        $this->line("\n<comment>Next steps:</comment>");
+        $this->line("  - Implement your authorization logic in the authorize() method");
+        $this->line("  - Register your authorizer in a service provider if needed");
+        $this->line("  - Use the DefaultAuthorizerFactory to resolve your authorizer");
 
         return 0;
     }
@@ -78,78 +94,49 @@ class MakeAuthorizerCommand extends Command
     /**
      * Create a new authorizer file at the given path.
      *
-     * @param  string  $name
-     * @param  string  $path
+     * @param  string  $name Class name
+     * @param  string  $path File path
+     * @param  string  $namespace Class namespace
      * @return void
      */
-    protected function makeAuthorizer($name, $path)
+    protected function makeAuthorizer($name, $path, $namespace)
     {
-        $stub = $this->getStub();
-        $contents = $this->replaceNamespace($stub, $name)
-            ->replaceClass($stub, $name);
+        $stub = $this->files->get($this->getStubPath());
 
-        $this->files->put($path, $contents);
+        $stub = str_replace('{{ namespace }}', $namespace, $stub);
+        $stub = str_replace('{{ class }}', $name, $stub);
+
+        $this->files->put($path, $stub);
     }
 
     /**
-     * Get the stub file for the generator.
+     * Get the stub file path.
      *
      * @return string
      */
-    protected function getStub()
+    protected function getStubPath()
     {
-        $stub = <<<'EOT'
-<?php
-
-namespace App\Authorizers;
-
-use Kwidoo\Lifecycle\Contracts\Authorizers\Authorizer;
-use Spatie\LaravelData\Contracts\BaseData;
-
-class DummyClass implements Authorizer
-{
-    /**
-     * @param string $ability
-     * @param BaseData|null $context
-     *
-     * @return void
-     */
-    public function authorize(string $ability, ?BaseData $context = null): void
-    {
-        // Implement your authorization logic here
-    }
-}
-EOT;
-        return $stub;
+        return __DIR__ . '/stubs/authorizer.stub';
     }
 
     /**
-     * Replace the namespace for the given stub.
+     * Determine namespace from a custom path.
      *
-     * @param  string  $stub
-     * @param  string  $name
-     * @return $this
-     */
-    protected function replaceNamespace(&$stub, $name)
-    {
-        $stub = str_replace(
-            ['DummyNamespace', 'DummyRootNamespace'],
-            ['App\\Authorizers', 'App\\'],
-            $stub
-        );
-
-        return $this;
-    }
-
-    /**
-     * Replace the class name for the given stub.
-     *
-     * @param  string  $stub
-     * @param  string  $name
+     * @param string $path
      * @return string
      */
-    protected function replaceClass($stub, $name)
+    protected function getNamespaceFromPath($path)
     {
-        return str_replace('DummyClass', $name, $stub);
+        // Try to derive namespace from path, assuming PSR-4 structure
+        // Default to App\Authorizers if we can't determine one
+        if (Str::startsWith($path, 'app/')) {
+            return 'App\\' . str_replace('/', '\\', Str::after($path, 'app/'));
+        }
+
+        if (Str::startsWith($path, 'src/')) {
+            return 'Kwidoo\\Lifecycle\\' . str_replace('/', '\\', Str::after($path, 'src/'));
+        }
+
+        return 'App\\Authorizers';
     }
 }

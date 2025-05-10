@@ -5,6 +5,7 @@ namespace Kwidoo\Lifecycle;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\ServiceProvider;
 use Kwidoo\Lifecycle\Authorizers\DefaultAuthorizer;
+use Kwidoo\Lifecycle\Commands\LifecycleSetupCommand;
 use Kwidoo\Lifecycle\Commands\MakeAuthorizerCommand;
 use Kwidoo\Lifecycle\Contracts\Authorizers\Authorizer;
 use Kwidoo\Lifecycle\Contracts\Authorizers\AuthorizerFactory;
@@ -13,6 +14,9 @@ use Kwidoo\Lifecycle\Contracts\Lifecycle\Lifecycle;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\LifecycleStrategyResolver;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Loggable;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Transactional;
+use Kwidoo\Lifecycle\Contracts\Resolvers\AuthorizerResolver;
+use Kwidoo\Lifecycle\Contracts\Resolvers\LifecycleResolver;
+use Kwidoo\Lifecycle\Contracts\Resolvers\StrategyResolver;
 use Kwidoo\Lifecycle\Factories\DefaultAuthorizerFactory;
 use Kwidoo\Lifecycle\Factories\LifecycleMiddlewareFactory;
 use Kwidoo\Lifecycle\Lifecycle\DefaultEventable;
@@ -20,12 +24,17 @@ use Kwidoo\Lifecycle\Lifecycle\DefaultLifecycle;
 use Kwidoo\Lifecycle\Lifecycle\DefaultLifecycleStrategyResolver;
 use Kwidoo\Lifecycle\Lifecycle\DefaultLoggable;
 use Kwidoo\Lifecycle\Lifecycle\DefaultTransactional;
+use Kwidoo\Lifecycle\Resolvers\AuthAwareResolver;
+use Kwidoo\Lifecycle\Resolvers\ConfigDrivenStrategyResolver;
+use Kwidoo\Lifecycle\Resolvers\DefaultLifecycleResolver;
+use Kwidoo\Lifecycle\Resolvers\DefaultStrategyResolver;
 use Kwidoo\Lifecycle\Strategies\WithEvents;
 use Kwidoo\Lifecycle\Strategies\WithLogging;
 use Kwidoo\Lifecycle\Strategies\WithoutEvents;
 use Kwidoo\Lifecycle\Strategies\WithoutLogging;
 use Kwidoo\Lifecycle\Strategies\WithoutTransactions;
 use Kwidoo\Lifecycle\Strategies\WithTransactions;
+use Kwidoo\Lifecycle\Support\Helpers\LifecycleInstallerService;
 
 class LifecycleServiceProvider extends ServiceProvider
 {
@@ -65,6 +74,7 @@ class LifecycleServiceProvider extends ServiceProvider
             // Registering package commands.
             $this->commands([
                 MakeAuthorizerCommand::class,
+                LifecycleSetupCommand::class,
             ]);
         }
     }
@@ -77,28 +87,26 @@ class LifecycleServiceProvider extends ServiceProvider
         // Automatically apply the package configuration
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'lifecycle');
 
+        // Register Installer Services
+        $this->app->singleton(LifecycleInstallerService::class, function ($app) {
+            return new LifecycleInstallerService($app->make('files'));
+        });
+
         // Register Authorizer components
         $this->app->bind(Authorizer::class, DefaultAuthorizer::class);
         $this->app->bind(AuthorizerFactory::class, DefaultAuthorizerFactory::class);
+        $this->app->bind(AuthorizerResolver::class, AuthAwareResolver::class);
 
         // Register Pipeline
         $this->app->bind(Pipeline::class, function ($app) {
             return new Pipeline($app);
         });
 
-        // Register LifecycleMiddlewareFactory
-        $this->app->bind(LifecycleMiddlewareFactory::class, function ($app) {
-            return new LifecycleMiddlewareFactory(
-                $app->make(LifecycleStrategyResolver::class)
-            );
-        });
+        // Register Resolver components - new interfaces
+        $this->app->bind(StrategyResolver::class, ConfigDrivenStrategyResolver::class);
+        $this->app->bind(LifecycleResolver::class, DefaultLifecycleResolver::class);
 
-        // Register Lifecycle components
-        $this->app->bind(Lifecycle::class, DefaultLifecycle::class);
-        $this->app->bind(Eventable::class, DefaultEventable::class);
-        $this->app->bind(Loggable::class, DefaultLoggable::class);
-        $this->app->bind(Transactional::class, DefaultTransactional::class);
-
+        // For backward compatibility - bind the old interface to our adapter
         $this->app->bind(LifecycleStrategyResolver::class, function ($app) {
             return new DefaultLifecycleStrategyResolver(
                 eventableStrategies: [
@@ -115,5 +123,19 @@ class LifecycleServiceProvider extends ServiceProvider
                 ],
             );
         });
+
+        // Register LifecycleMiddlewareFactory with the new resolver
+        $this->app->bind(LifecycleMiddlewareFactory::class, function ($app) {
+            // Use the new StrategyResolver instead of the legacy resolver
+            return new LifecycleMiddlewareFactory(
+                $app->make(StrategyResolver::class)
+            );
+        });
+
+        // Register Lifecycle components
+        $this->app->bind(Lifecycle::class, DefaultLifecycle::class);
+        $this->app->bind(Eventable::class, DefaultEventable::class);
+        $this->app->bind(Loggable::class, DefaultLoggable::class);
+        $this->app->bind(Transactional::class, DefaultTransactional::class);
     }
 }

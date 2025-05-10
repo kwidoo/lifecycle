@@ -2,16 +2,19 @@
 
 namespace Kwidoo\Lifecycle\Lifecycle;
 
-use Kwidoo\Lifecycle\Contracts\Strategies\EventableStrategy;
-use Kwidoo\Lifecycle\Contracts\Strategies\LoggingStrategy;
+use Kwidoo\Lifecycle\Contracts\Strategies\ErrorStrategy;
+use Kwidoo\Lifecycle\Contracts\Strategies\EventStrategy;
+use Kwidoo\Lifecycle\Contracts\Strategies\LogStrategy;
+use Kwidoo\Lifecycle\Contracts\Strategies\RetryStrategy;
 use Kwidoo\Lifecycle\Contracts\Strategies\TransactionStrategy;
 
 class LifecycleStrategies
 {
     public function __construct(
-        public EventableStrategy $eventable,
+        public EventStrategy $eventable,
         public TransactionStrategy $transactional,
-        public LoggingStrategy $loggable,
-    ) {
-    }
+        public LogStrategy $loggable,
+        public ?RetryStrategy $retryable = null,
+        public ?ErrorStrategy $errorable = null,
+    ) {}
 }

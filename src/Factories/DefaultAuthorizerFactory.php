@@ -9,21 +9,46 @@ use Kwidoo\Lifecycle\Contracts\Authorizers\AuthorizerFactory;
 
 class DefaultAuthorizerFactory implements AuthorizerFactory
 {
+    /**
+     * @var array<string, class-string<Authorizer>>
+     */
+    protected array $resourceAuthorizers;
+
+    /**
+     * Create a new authorizer factory instance
+     *
+     * @param Container $container The Laravel container
+     */
     public function __construct(
         protected Container $container
     ) {
+        $this->resourceAuthorizers = $this->loadAuthorizerMap();
     }
 
     /**
-     * @param string $context
+     * Resolve the appropriate authorizer for a given resource
      *
+     * @param string $resource The resource name
      * @return Authorizer
      */
-    public function resolve(string $context): Authorizer
+    public function resolve(string $resource): Authorizer
     {
-        return match ($context) {
-            'quiz' => $this->container->make(DefaultAuthorizer::class),
-            default => $this->container->make(DefaultAuthorizer::class),
-        };
+        $authorizerClass = $this->resourceAuthorizers[$resource] ?? $this->resourceAuthorizers['default'];
+
+        return $this->container->make($authorizerClass);
+    }
+
+    /**
+     * Load the authorizer map from configuration
+     *
+     * @return array<string, class-string<Authorizer>>
+     */
+    protected function loadAuthorizerMap(): array
+    {
+        $configuredMap = config('lifecycle.authorizers', []);
+
+        return array_merge([
+            'default' => DefaultAuthorizer::class,
+        ], $configuredMap);
     }
 }

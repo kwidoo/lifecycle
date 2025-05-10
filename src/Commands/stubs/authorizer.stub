@@ -1,0 +1,33 @@
+<?php
+
+namespace {{ namespace }};
+
+use Kwidoo\Lifecycle\Contracts\Authorizers\Authorizer;
+use Spatie\LaravelData\Contracts\BaseData;
+
+class {{ class }} implements Authorizer
+{
+    /**
+     * Authorize a specific ability for the given context
+     *
+     * @param string $ability The ability to check authorization for
+     * @param BaseData|null $context Optional context data for authorization
+     * @throws \Illuminate\Auth\Access\AuthorizationException When authorization fails
+     * @return void
+     */
+    public function authorize(string $ability, ?BaseData $context = null): void
+    {
+        // Implement your authorization logic here
+        // Examples:
+        //
+        // 1. For user-based authorization:
+        // if (!auth()->user()->can($ability)) {
+        //     throw new \Illuminate\Auth\Access\AuthorizationException("Not authorized to {$ability}");
+        // }
+        //
+        // 2. For resource-based authorization:
+        // if ($context && $context instanceof ProductData && !auth()->user()->canManageProduct($context->id)) {
+        //     throw new \Illuminate\Auth\Access\AuthorizationException("Not authorized to {$ability} this product");
+        // }
+    }
+}

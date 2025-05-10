@@ -2,6 +2,7 @@
 
 namespace Kwidoo\Lifecycle\Strategies;
 
+use Closure;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Transactional;
 use Kwidoo\Lifecycle\Contracts\Strategies\TransactionStrategy;
 
@@ -9,16 +10,27 @@ class WithoutTransactions implements TransactionStrategy
 {
     public function __construct(
         protected Transactional $transactional
-    ) {
+    ) {}
+
+    /**
+     * Execute without a transaction
+     *
+     * @param Closure $callback
+     * @return mixed
+     */
+    public function execute(Closure $callback): mixed
+    {
+        return $callback();
     }
 
     /**
+     * @deprecated Use execute() instead
      * @param callable $callback
      *
      * @return mixed
      */
     public function executeTransactions(callable $callback): mixed
     {
-        return $callback();
+        return $this->execute($callback);
     }
 }

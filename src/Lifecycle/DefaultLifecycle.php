@@ -6,6 +6,7 @@ use Illuminate\Pipeline\Pipeline;
 use Kwidoo\Lifecycle\Contracts\Authorizers\AuthorizerFactory;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Lifecycle;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\LifecycleStrategyResolver;
+use Kwidoo\Lifecycle\Data\LifecycleContextData;
 use Kwidoo\Lifecycle\Data\LifecycleData;
 use Kwidoo\Lifecycle\Data\LifecycleOptionsData;
 use Kwidoo\Lifecycle\Factories\LifecycleMiddlewareFactory;
@@ -17,17 +18,16 @@ class DefaultLifecycle implements Lifecycle
         protected LifecycleStrategyResolver $resolver,
         protected Pipeline $pipeline,
         protected LifecycleMiddlewareFactory $middlewareFactory,
-    ) {
-    }
+    ) {}
 
     /**
-     * @param LifecycleData $data
+     * @param LifecycleContextData|LifecycleData $data
      * @param callable $callback
-     * @param mixed $options
+     * @param LifecycleOptionsData|null $options
      *
      * @return mixed
      */
-    public function run(LifecycleData $data, callable $callback, $options): mixed
+    public function run(LifecycleContextData|LifecycleData $data, callable $callback, $options = null): mixed
     {
         $options ??= new LifecycleOptionsData();
         if ($options->authEnabled) {
@@ -41,11 +41,11 @@ class DefaultLifecycle implements Lifecycle
     }
 
     /**
-     * @param LifecycleData $data
+     * @param LifecycleContextData|LifecycleData $data
      *
      * @return void
      */
-    protected function authorize(LifecycleData $data): void
+    protected function authorize(LifecycleContextData|LifecycleData $data): void
     {
         $authorizer = $this->authorizerFactory->resolve($data->resource);
         $authorizer->authorize($data->action, $data->context);
