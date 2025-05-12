@@ -9,9 +9,9 @@ use Kwidoo\Lifecycle\Commands\LifecycleSetupCommand;
 use Kwidoo\Lifecycle\Commands\MakeAuthorizerCommand;
 use Kwidoo\Lifecycle\Contracts\Authorizers\Authorizer;
 use Kwidoo\Lifecycle\Contracts\Authorizers\AuthorizerFactory;
+use Kwidoo\Lifecycle\Contracts\Factories\LoggableFactory;
+use Kwidoo\Lifecycle\Contracts\Features\Retryable;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Eventable;
-use Kwidoo\Lifecycle\Contracts\Lifecycle\Lifecycle;
-use Kwidoo\Lifecycle\Contracts\Lifecycle\LifecycleStrategyResolver;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Loggable;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Transactional;
 use Kwidoo\Lifecycle\Contracts\Resolvers\AuthorizerResolver;
@@ -23,22 +23,15 @@ use Kwidoo\Lifecycle\CQRS\Contracts\CommandDispatcher;
 use Kwidoo\Lifecycle\CQRS\CQRSService;
 use Kwidoo\Lifecycle\CQRS\Repositories\ReadModelRepositoryFactory;
 use Kwidoo\Lifecycle\Factories\DefaultAuthorizerFactory;
+use Kwidoo\Lifecycle\Factories\DefaultLoggableFactory;
 use Kwidoo\Lifecycle\Factories\LifecycleMiddlewareFactory;
-use Kwidoo\Lifecycle\Lifecycle\DefaultEventable;
-use Kwidoo\Lifecycle\Lifecycle\DefaultLifecycle;
-use Kwidoo\Lifecycle\Lifecycle\DefaultLifecycleStrategyResolver;
-use Kwidoo\Lifecycle\Lifecycle\DefaultLoggable;
-use Kwidoo\Lifecycle\Lifecycle\DefaultTransactional;
+use Kwidoo\Lifecycle\Features\Event\DefaultEventable;
+use Kwidoo\Lifecycle\Features\Retry\DefaultRetryable;
+use Kwidoo\Lifecycle\Features\Log\DefaultLoggable;
+use Kwidoo\Lifecycle\Features\Transaction\DefaultTransactional;
 use Kwidoo\Lifecycle\Resolvers\AuthAwareResolver;
 use Kwidoo\Lifecycle\Resolvers\ConfigDrivenStrategyResolver;
 use Kwidoo\Lifecycle\Resolvers\DefaultLifecycleResolver;
-use Kwidoo\Lifecycle\Resolvers\DefaultStrategyResolver;
-use Kwidoo\Lifecycle\Strategies\WithEvents;
-use Kwidoo\Lifecycle\Strategies\WithLogging;
-use Kwidoo\Lifecycle\Strategies\WithoutEvents;
-use Kwidoo\Lifecycle\Strategies\WithoutLogging;
-use Kwidoo\Lifecycle\Strategies\WithoutTransactions;
-use Kwidoo\Lifecycle\Strategies\WithTransactions;
 use Kwidoo\Lifecycle\Support\Helpers\LifecycleInstallerService;
 
 class LifecycleServiceProvider extends ServiceProvider
@@ -108,26 +101,7 @@ class LifecycleServiceProvider extends ServiceProvider
         });
 
         // Register Resolver components - new interfaces
-        $this->app->bind(StrategyResolver::class, ConfigDrivenStrategyResolver::class);
-        $this->app->bind(LifecycleResolver::class, DefaultLifecycleResolver::class);
 
-        // For backward compatibility - bind the old interface to our adapter
-        $this->app->bind(LifecycleStrategyResolver::class, function ($app) {
-            return new DefaultLifecycleStrategyResolver(
-                eventableStrategies: [
-                    true => $app->make(WithEvents::class),
-                    false => $app->make(WithoutEvents::class),
-                ],
-                loggingStrategies: [
-                    true => $app->make(WithLogging::class),
-                    false => $app->make(WithoutLogging::class),
-                ],
-                transactionStrategies: [
-                    true => $app->make(WithTransactions::class),
-                    false => $app->make(WithoutTransactions::class),
-                ],
-            );
-        });
 
         // Register LifecycleMiddlewareFactory with the new resolver
         $this->app->bind(LifecycleMiddlewareFactory::class, function ($app) {
@@ -136,9 +110,8 @@ class LifecycleServiceProvider extends ServiceProvider
                 $app->make(StrategyResolver::class)
             );
         });
-
-        // Register Lifecycle components
-        $this->app->bind(Lifecycle::class, DefaultLifecycle::class);
+        $this->app->bind(LoggableFactory::class, DefaultLoggableFactory::class);
+        $this->app->bind(Retryable::class, DefaultRetryable::class);
         $this->app->bind(Eventable::class, DefaultEventable::class);
         $this->app->bind(Loggable::class, DefaultLoggable::class);
         $this->app->bind(Transactional::class, DefaultTransactional::class);

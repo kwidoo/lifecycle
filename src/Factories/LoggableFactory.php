@@ -3,11 +3,11 @@
 namespace Kwidoo\Lifecycle\Factories;
 
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Support\Facades\App;
+use Kwidoo\Lifecycle\Contracts\Factories\LoggableFactory;
 use Kwidoo\Lifecycle\Contracts\Features\Loggable;
 use Kwidoo\Lifecycle\Features\Log\DefaultLoggable;
 
-class LoggableFactory
+class DefaultLoggableFactory implements LoggableFactory
 {
     /**
      * Factory registry
