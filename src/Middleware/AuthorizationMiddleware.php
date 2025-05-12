@@ -5,7 +5,6 @@ namespace Kwidoo\Lifecycle\Middleware;
 use Closure;
 use Kwidoo\Lifecycle\Contracts\Authorizers\AuthorizerFactory;
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
-use Kwidoo\Lifecycle\Data\LifecycleData;
 
 class AuthorizationMiddleware
 {
@@ -19,11 +18,11 @@ class AuthorizationMiddleware
     /**
      * Handle the lifecycle request with authorization
      *
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @param Closure $next
      * @return mixed
      */
-    public function handle(LifecycleContextData|LifecycleData $data, Closure $next): mixed
+    public function handle(LifecycleContextData $data, Closure $next): mixed
     {
         $authorizer = $this->authorizerFactory->resolve($data->resource);
         $authorizer->authorize($data->action, $data->context);
