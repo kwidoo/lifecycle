@@ -14,6 +14,8 @@ class LifecycleOptionsData extends Data
         public bool $retryEnabled = true,
         public bool $cacheEnabled = true,
         public bool $rateLimitEnabled = true,
+        public bool $useCQRS = false,
+        public bool $asQuery = false,
     ) {}
 
     /**
@@ -32,6 +34,8 @@ class LifecycleOptionsData extends Data
             retryEnabled: $parameters['retryEnabled'] ?? $this->retryEnabled,
             cacheEnabled: $parameters['cacheEnabled'] ?? $this->cacheEnabled,
             rateLimitEnabled: $parameters['rateLimitEnabled'] ?? $this->rateLimitEnabled,
+            useCQRS: $parameters['useCQRS'] ?? $this->useCQRS,
+            asQuery: $parameters['asQuery'] ?? $this->asQuery,
         );
     }
 
@@ -176,6 +180,40 @@ class LifecycleOptionsData extends Data
     }
 
     /**
+     * Enable CQRS command mode for handling commands via aggregates
+     * This will route execution through CQRS command handlers and aggregates
+     *
+     * @param bool $value Whether to enable CQRS command mode
+     * @return self
+     * @throws \LogicException If trying to enable both CQRS command and query modes
+     */
+    public function useCQRS(bool $value = true): self
+    {
+        if ($value && $this->asQuery) {
+            throw new \LogicException('Cannot use CQRS command and query modes simultaneously.');
+        }
+
+        return $this->copy(useCQRS: $value);
+    }
+
+    /**
+     * Enable CQRS query mode for reading from query models/projections
+     * This will bypass command-side middleware and access read models directly
+     *
+     * @param bool $value Whether to enable query mode
+     * @return self
+     * @throws \LogicException If trying to enable both CQRS command and query modes
+     */
+    public function asQuery(bool $value = true): self
+    {
+        if ($value && $this->useCQRS) {
+            throw new \LogicException('Cannot use CQRS command and query modes simultaneously.');
+        }
+
+        return $this->copy(asQuery: $value);
+    }
+
+    /**
      * Convert to array for debug or logging purposes
      *
      * @return array
@@ -190,6 +228,8 @@ class LifecycleOptionsData extends Data
             'retry' => $this->retryEnabled,
             'cache' => $this->cacheEnabled,
             'rateLimit' => $this->rateLimitEnabled,
+            'useCQRS' => $this->useCQRS,
+            'asQuery' => $this->asQuery,
         ];
     }
 }

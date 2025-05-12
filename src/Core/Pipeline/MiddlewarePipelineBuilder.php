@@ -80,4 +80,43 @@ class MiddlewarePipelineBuilder
 
         return $middlewares;
     }
+
+    /**
+     * Build a lightweight middleware pipeline for query operations
+     * Queries typically need less middleware than commands
+     *
+     * @param LifecycleOptionsData $options
+     * @return array
+     */
+    public function buildForQueries(LifecycleOptionsData $options): array
+    {
+        $middlewares = [];
+
+        // Error handling is still necessary
+        $middlewares[] = new ErrorCatcherMiddleware($this->errorStrategy);
+
+        // Authorization still applies to queries
+        if ($options->authEnabled) {
+            $middlewares[] = new AuthorizationMiddleware($this->authorizerFactory);
+        }
+
+        // Logging is useful for queries but may have different details
+        if ($options->loggingEnabled) {
+            $middlewares[] = new LoggingMiddleware($this->logStrategy);
+        }
+
+        // Retries might still be useful for queries (e.g., if read model is temporarily unavailable)
+        if ($options->retryEnabled) {
+            $middlewares[] = new RetryMiddleware($this->retryStrategy);
+        }
+
+        // Note: We intentionally exclude:
+        // - TransactionsMiddleware (queries are read-only)
+        // - EventsMiddleware (queries don't produce domain events)
+
+        // Finalization middleware still applies
+        $middlewares[] = new FinalizationMiddleware();
+
+        return $middlewares;
+    }
 }

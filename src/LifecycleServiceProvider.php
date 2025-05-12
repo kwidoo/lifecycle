@@ -17,6 +17,11 @@ use Kwidoo\Lifecycle\Contracts\Lifecycle\Transactional;
 use Kwidoo\Lifecycle\Contracts\Resolvers\AuthorizerResolver;
 use Kwidoo\Lifecycle\Contracts\Resolvers\LifecycleResolver;
 use Kwidoo\Lifecycle\Contracts\Resolvers\StrategyResolver;
+use Kwidoo\Lifecycle\CQRS\Commands\CommandFactory;
+use Kwidoo\Lifecycle\CQRS\Commands\DefaultCommandDispatcher;
+use Kwidoo\Lifecycle\CQRS\Contracts\CommandDispatcher;
+use Kwidoo\Lifecycle\CQRS\CQRSService;
+use Kwidoo\Lifecycle\CQRS\Repositories\ReadModelRepositoryFactory;
 use Kwidoo\Lifecycle\Factories\DefaultAuthorizerFactory;
 use Kwidoo\Lifecycle\Factories\LifecycleMiddlewareFactory;
 use Kwidoo\Lifecycle\Lifecycle\DefaultEventable;
@@ -137,5 +142,52 @@ class LifecycleServiceProvider extends ServiceProvider
         $this->app->bind(Eventable::class, DefaultEventable::class);
         $this->app->bind(Loggable::class, DefaultLoggable::class);
         $this->app->bind(Transactional::class, DefaultTransactional::class);
+
+        // Register CQRS components
+        $this->registerCQRSComponents();
+    }
+
+    /**
+     * Register CQRS components with the container
+     */
+    protected function registerCQRSComponents()
+    {
+        // Command dispatcher
+        $this->app->bind(CommandDispatcher::class, function ($app) {
+            return new DefaultCommandDispatcher(
+                container: $app,
+                cqrsMappings: config('lifecycle.cqrs_mappings', []),
+            );
+        });
+
+        // Command factory
+        $this->app->bind(CommandFactory::class, function ($app) {
+            return new CommandFactory(
+                container: $app,
+                cqrsMappings: config('lifecycle.cqrs_mappings', []),
+            );
+        });
+
+        // Read model repository factory
+        $this->app->bind(ReadModelRepositoryFactory::class, function ($app) {
+            return new ReadModelRepositoryFactory(
+                container: $app,
+                readModelMappings: config('lifecycle.read_models', []),
+            );
+        });
+
+        // Main CQRS Service
+        $this->app->bind(CQRSService::class, function ($app) {
+            return new CQRSService(
+                container: $app,
+                commandDispatcher: $app->make(CommandDispatcher::class),
+                commandFactory: $app->make(CommandFactory::class),
+                repositoryFactory: $app->make(ReadModelRepositoryFactory::class),
+                config: [
+                    'cqrs_transactions' => config('lifecycle.cqrs_transactions', []),
+                    'cqrs_events' => config('lifecycle.cqrs_events', []),
+                ],
+            );
+        });
     }
 }

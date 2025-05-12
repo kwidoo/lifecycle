@@ -4,6 +4,7 @@ namespace Kwidoo\Lifecycle\Tests\Unit\Data;
 
 use Kwidoo\Lifecycle\Data\LifecycleOptionsData;
 use Kwidoo\Lifecycle\Tests\TestCase;
+use LogicException;
 
 class LifecycleOptionsDataTest extends TestCase
 {
@@ -182,5 +183,59 @@ class LifecycleOptionsDataTest extends TestCase
         $this->assertArrayHasKey('rateLimit', $array);
 
         $this->assertTrue($array['auth']);
+    }
+
+    /** @test */
+    public function it_can_enable_cqrs_mode()
+    {
+        $options = new LifecycleOptionsData();
+        $this->assertFalse($options->useCQRS);
+
+        $options = $options->useCQRS();
+        $this->assertTrue($options->useCQRS);
+        $this->assertFalse($options->asQuery);
+    }
+
+    /** @test */
+    public function it_can_enable_query_mode()
+    {
+        $options = new LifecycleOptionsData();
+        $this->assertFalse($options->asQuery);
+
+        $options = $options->asQuery();
+        $this->assertTrue($options->asQuery);
+        $this->assertFalse($options->useCQRS);
+    }
+
+    /** @test */
+    public function it_cannot_enable_both_cqrs_and_query_modes()
+    {
+        $options = new LifecycleOptionsData();
+
+        $options = $options->useCQRS();
+        $this->expectException(LogicException::class);
+        $options->asQuery();
+    }
+
+    /** @test */
+    public function it_cannot_enable_both_query_and_cqrs_modes()
+    {
+        $options = new LifecycleOptionsData();
+
+        $options = $options->asQuery();
+        $this->expectException(LogicException::class);
+        $options->useCQRS();
+    }
+
+    /** @test */
+    public function it_includes_cqrs_options_in_array_representation()
+    {
+        $options = (new LifecycleOptionsData())->useCQRS();
+        $array = $options->toArray();
+
+        $this->assertArrayHasKey('useCQRS', $array);
+        $this->assertArrayHasKey('asQuery', $array);
+        $this->assertTrue($array['useCQRS']);
+        $this->assertFalse($array['asQuery']);
     }
 }

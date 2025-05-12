@@ -6,11 +6,13 @@ use Illuminate\Pipeline\Pipeline;
 use Kwidoo\Lifecycle\Contracts\Authorizers\AuthorizerFactory;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Lifecycle;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\LifecycleStrategyResolver;
+use Kwidoo\Lifecycle\CQRS\CQRSService;
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
 use Kwidoo\Lifecycle\Data\LifecycleData;
 use Kwidoo\Lifecycle\Data\LifecycleOptionsData;
 use Kwidoo\Lifecycle\Data\LifecycleResultData;
 use Kwidoo\Lifecycle\Factories\LifecycleMiddlewareFactory;
+use LogicException;
 
 class DefaultLifecycle implements Lifecycle
 {
@@ -19,6 +21,7 @@ class DefaultLifecycle implements Lifecycle
         protected LifecycleStrategyResolver $resolver,
         protected Pipeline $pipeline,
         protected LifecycleMiddlewareFactory $middlewareFactory,
+        protected CQRSService $cqrsService,
     ) {}
 
     /**
@@ -38,26 +41,125 @@ class DefaultLifecycle implements Lifecycle
             $this->authorize($data);
         }
 
-        // If using legacy LifecycleData, wrap it for backward compatibility
-        if ($data instanceof LifecycleData) {
-            $result = $this->runWithLegacyData($data, $callback, $options);
-        } else {
-            // Create a new result data object and combine with context data
-            $resultData = new LifecycleResultData();
-            $lifeCycleData = $this->createLifecycleData($data, $resultData);
-
-            // Execute the pipeline with combined data
-            $result = $this->pipeline
-                ->send($lifeCycleData)
-                ->through($this->middlewareFactory->forOptions($options))
-                ->then(function ($lifeCycleData) use ($callback) {
-                    $result = $callback($lifeCycleData);
-                    $lifeCycleData->result = $result;
-                    return $result;
-                });
+        // Route to appropriate execution path based on options
+        if ($options->useCQRS) {
+            return $this->runWithCQRSCommand($data, $callback, $options);
         }
 
+        if ($options->asQuery) {
+            return $this->runWithCQRSQuery($data, $callback, $options);
+        }
+
+        // Default legacy flow
+        if ($data instanceof LifecycleData) {
+            return $this->runWithLegacyData($data, $callback, $options);
+        }
+
+        // Standard flow with LifecycleContextData
+        $resultData = new LifecycleResultData();
+        $lifeCycleData = $this->createLifecycleData($data, $resultData);
+
+        // Execute the pipeline with combined data
+        $result = $this->pipeline
+            ->send($lifeCycleData)
+            ->through($this->middlewareFactory->forOptions($options))
+            ->then(function ($lifeCycleData) use ($callback) {
+                $result = $callback($lifeCycleData);
+                $lifeCycleData->result = $result;
+                return $result;
+            });
+
         return $result;
+    }
+
+    /**
+     * Run with CQRS Command mode - handle command processing via aggregates
+     *
+     * @param LifecycleContextData|LifecycleData $data
+     * @param callable $callback Function that creates and dispatches the command (optional in CQRS mode)
+     * @param LifecycleOptionsData $options
+     * @return mixed
+     */
+    protected function runWithCQRSCommand(
+        LifecycleContextData|LifecycleData $data,
+        callable $callback,
+        LifecycleOptionsData $options
+    ): mixed {
+        // Create standard lifecycle data structure for pipeline consistency
+        $lifeCycleData = $data instanceof LifecycleData
+            ? $data
+            : $this->createLifecycleData($data, new LifecycleResultData());
+
+        // First run through the middleware pipeline to handle all cross-cutting concerns
+        return $this->pipeline
+            ->send($lifeCycleData)
+            ->through($this->middlewareFactory->forOptions($options))
+            ->then(function ($lifeCycleData) use ($callback) {
+                // The user has two options for CQRS command handling:
+
+                // Option 1: Let the CQRSService create and dispatch a command automatically
+                // based on the action.resource mapping in config
+                try {
+                    $result = $this->cqrsService->handleCommand($lifeCycleData);
+                    $lifeCycleData->result = $result;
+                    return $result;
+                } catch (\InvalidArgumentException $e) {
+                    // If no automatic mapping exists, fall back to Option 2
+                }
+
+                // Option 2: Use the provided callback to handle command creation and dispatching
+                // This gives more flexibility but requires the user to write more code
+                $result = $callback($lifeCycleData);
+                $lifeCycleData->result = $result;
+                return $result;
+            });
+    }
+
+    /**
+     * Run with CQRS Query mode - bypass most middleware and access read models
+     *
+     * @param LifecycleContextData|LifecycleData $data
+     * @param callable $callback Function that queries the read model (optional in CQRS mode)
+     * @param LifecycleOptionsData $options
+     * @return mixed
+     */
+    protected function runWithCQRSQuery(
+        LifecycleContextData|LifecycleData $data,
+        callable $callback,
+        LifecycleOptionsData $options
+    ): mixed {
+        // For query mode, we use a more lightweight pipeline
+        // Create standard lifecycle data structure for pipeline consistency
+        $lifeCycleData = $data instanceof LifecycleData
+            ? $data
+            : $this->createLifecycleData($data, new LifecycleResultData());
+
+        // Only apply minimal middleware for queries - typically just auth and logging
+        $queryOptions = (clone $options)
+            ->withoutTrx()     // No transactions for queries
+            ->withoutEvents(); // No events for queries
+
+        // Execute the pipeline with minimal middleware
+        return $this->pipeline
+            ->send($lifeCycleData)
+            ->through($this->middlewareFactory->forQueryOptions($queryOptions))
+            ->then(function ($lifeCycleData) use ($callback) {
+                // Similar to command mode, provide two options for query handling:
+
+                // Option 1: Let the CQRSService handle the query automatically
+                try {
+                    $result = $this->cqrsService->query($lifeCycleData);
+                    $lifeCycleData->result = $result;
+                    return $result;
+                } catch (\InvalidArgumentException $e) {
+                    // If automatic handling fails, fall back to Option 2
+                }
+
+                // Option 2: Use the provided callback for customized query handling
+                $result = $callback($lifeCycleData);
+                $lifeCycleData->result = $result;
+                return $result;
+            });
     }
 
     /**

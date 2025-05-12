@@ -17,10 +17,11 @@
     ],
     "require": {
         "php": "^8.2",
-        "spatie/laravel-data": "^4.15",
+        "illuminate/support": "^12.0",
         "league/fractal": "^0.20.2",
         "prettus/l5-repository": "^2.10",
-        "illuminate/support": "^12.0"
+        "spatie/laravel-data": "^4.15",
+        "spatie/laravel-event-sourcing": "^7.11"
     },
     "require-dev": {
         "orchestra/testbench": "^10.0",
