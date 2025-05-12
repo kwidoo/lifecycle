@@ -5,7 +5,8 @@ namespace Kwidoo\Lifecycle\Middleware;
 use Closure;
 use Kwidoo\Lifecycle\Contracts\Strategies\ErrorStrategy;
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
-use Kwidoo\Lifecycle\Data\LifecycleData;
+use Kwidoo\Lifecycle\Data\LifecycleResultData;
+use Throwable;
 
 class ErrorCatcherMiddleware
 {
@@ -19,17 +20,18 @@ class ErrorCatcherMiddleware
     /**
      * Handle the lifecycle request and catch any errors
      *
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @param Closure $next
-     * @return mixed
+     * @return LifecycleResultData
      * @throws \Throwable
      */
-    public function handle(LifecycleContextData|LifecycleData $data, Closure $next): mixed
+    public function handle(LifecycleContextData $data, Closure $next): mixed
     {
         try {
             return $next($data);
-        } catch (\Throwable $e) {
-            return $this->errorStrategy->handleError($data, $e);
+        } catch (Throwable $e) {
+            return $this->errorStrategy
+                ->handleError($data, $e);
         }
     }
 }

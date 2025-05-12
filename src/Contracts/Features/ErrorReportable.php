@@ -3,16 +3,17 @@
 namespace Kwidoo\Lifecycle\Contracts\Features;
 
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
-use Kwidoo\Lifecycle\Data\LifecycleData;
+use Kwidoo\Lifecycle\Data\LifecycleResultData;
+use Throwable;
 
 interface ErrorReportable
 {
     /**
      * Report an error that occurred during lifecycle execution
      *
-     * @param LifecycleContextData|LifecycleData $data
-     * @param \Throwable $error
+     * @param LifecycleContextData $data
+     * @param \Throwable $exception
      * @return void
      */
-    public function reportError(LifecycleContextData|LifecycleData $data, \Throwable $error): void;
+    public function report(LifecycleContextData $data, Throwable $exception): void;
 }
