@@ -3,9 +3,9 @@
 namespace Kwidoo\Lifecycle\Factories;
 
 use Illuminate\Contracts\Container\Container;
-use Kwidoo\Lifecycle\Authorizers\DefaultAuthorizer;
-use Kwidoo\Lifecycle\Contracts\Authorizers\Authorizer;
-use Kwidoo\Lifecycle\Contracts\Authorizers\AuthorizerFactory;
+use Kwidoo\Lifecycle\Contracts\Factories\AuthorizerFactory;
+use Kwidoo\Lifecycle\Contracts\Features\Authorizer;
+use Kwidoo\Lifecycle\Features\Authorizers\DefaultAuthorizer;
 
 class DefaultAuthorizerFactory implements AuthorizerFactory
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Kwidoo\Lifecycle\Contracts\Authorizers;
+namespace Kwidoo\Lifecycle\Contracts\Features;
 
 use Spatie\LaravelData\Contracts\BaseData;
 

@@ -9,6 +9,7 @@ class LifecycleOptionsData extends Data
     public function __construct(
         public bool $authEnabled = true,
         public bool $eventsEnabled = true,
+        public bool $errorCatcherEnabled = true,
         public bool $trxEnabled = true,
         public bool $loggingEnabled = true,
         public bool $retryEnabled = true,
@@ -24,11 +25,12 @@ class LifecycleOptionsData extends Data
      * @param array $parameters
      * @return self
      */
-    public function copy(...$parameters): self
+    public function make(...$parameters): self
     {
         return new self(
             authEnabled: $parameters['authEnabled'] ?? $this->authEnabled,
             eventsEnabled: $parameters['eventsEnabled'] ?? $this->eventsEnabled,
+            errorCatcherEnabled: $parameters['errorCatcherEnabled'] ?? $this->errorCatcherEnabled,
             trxEnabled: $parameters['trxEnabled'] ?? $this->trxEnabled,
             loggingEnabled: $parameters['loggingEnabled'] ?? $this->loggingEnabled,
             retryEnabled: $parameters['retryEnabled'] ?? $this->retryEnabled,
@@ -44,7 +46,7 @@ class LifecycleOptionsData extends Data
      */
     public function withoutTrx(): self
     {
-        return $this->copy(trxEnabled: false);
+        return $this->make(trxEnabled: false);
     }
 
     /**
@@ -52,7 +54,7 @@ class LifecycleOptionsData extends Data
      */
     public function withTrx(): self
     {
-        return $this->copy(trxEnabled: true);
+        return $this->make(trxEnabled: true);
     }
 
     /**
@@ -60,7 +62,7 @@ class LifecycleOptionsData extends Data
      */
     public function withoutEvents(): self
     {
-        return $this->copy(eventsEnabled: false);
+        return $this->make(eventsEnabled: false);
     }
 
     /**
@@ -68,7 +70,7 @@ class LifecycleOptionsData extends Data
      */
     public function withEvents(): self
     {
-        return $this->copy(eventsEnabled: true);
+        return $this->make(eventsEnabled: true);
     }
 
     /**
@@ -76,7 +78,7 @@ class LifecycleOptionsData extends Data
      */
     public function withoutLogging(): self
     {
-        return $this->copy(loggingEnabled: false);
+        return $this->make(loggingEnabled: false);
     }
 
     /**
@@ -84,7 +86,7 @@ class LifecycleOptionsData extends Data
      */
     public function withLogging(): self
     {
-        return $this->copy(loggingEnabled: true);
+        return $this->make(loggingEnabled: true);
     }
 
     /**
@@ -92,7 +94,7 @@ class LifecycleOptionsData extends Data
      */
     public function withoutAuth(): self
     {
-        return $this->copy(authEnabled: false);
+        return $this->make(authEnabled: false);
     }
 
     /**
@@ -100,7 +102,7 @@ class LifecycleOptionsData extends Data
      */
     public function withAuth(): self
     {
-        return $this->copy(authEnabled: true);
+        return $this->make(authEnabled: true);
     }
 
     /**
@@ -108,7 +110,7 @@ class LifecycleOptionsData extends Data
      */
     public function withoutRetry(): self
     {
-        return $this->copy(retryEnabled: false);
+        return $this->make(retryEnabled: false);
     }
 
     /**
@@ -116,7 +118,7 @@ class LifecycleOptionsData extends Data
      */
     public function withRetry(): self
     {
-        return $this->copy(retryEnabled: true);
+        return $this->make(retryEnabled: true);
     }
 
     /**
@@ -124,7 +126,7 @@ class LifecycleOptionsData extends Data
      */
     public function withoutCache(): self
     {
-        return $this->copy(cacheEnabled: false);
+        return $this->make(cacheEnabled: false);
     }
 
     /**
@@ -132,7 +134,7 @@ class LifecycleOptionsData extends Data
      */
     public function withCache(): self
     {
-        return $this->copy(cacheEnabled: true);
+        return $this->make(cacheEnabled: true);
     }
 
     /**
@@ -140,7 +142,7 @@ class LifecycleOptionsData extends Data
      */
     public function withoutRateLimit(): self
     {
-        return $this->copy(rateLimitEnabled: false);
+        return $this->make(rateLimitEnabled: false);
     }
 
     /**
@@ -148,7 +150,7 @@ class LifecycleOptionsData extends Data
      */
     public function withRateLimit(): self
     {
-        return $this->copy(rateLimitEnabled: true);
+        return $this->make(rateLimitEnabled: true);
     }
 
     /**
@@ -156,9 +158,10 @@ class LifecycleOptionsData extends Data
      */
     public function withoutAll(): self
     {
-        return $this->copy(
+        return $this->make(
             authEnabled: false,
             eventsEnabled: false,
+            errorCatcherEnabled: false,
             trxEnabled: false,
             loggingEnabled: false,
             retryEnabled: false,
@@ -173,7 +176,7 @@ class LifecycleOptionsData extends Data
      */
     public function forApi(): self
     {
-        return $this->copy(
+        return $this->make(
             trxEnabled: false,
             rateLimitEnabled: true
         );
@@ -193,7 +196,7 @@ class LifecycleOptionsData extends Data
             throw new \LogicException('Cannot use CQRS command and query modes simultaneously.');
         }
 
-        return $this->copy(useCQRS: $value);
+        return $this->make(useCQRS: $value);
     }
 
     /**
@@ -210,7 +213,7 @@ class LifecycleOptionsData extends Data
             throw new \LogicException('Cannot use CQRS command and query modes simultaneously.');
         }
 
-        return $this->copy(asQuery: $value);
+        return $this->make(asQuery: $value);
     }
 
     /**
@@ -223,6 +226,7 @@ class LifecycleOptionsData extends Data
         return [
             'auth' => $this->authEnabled,
             'events' => $this->eventsEnabled,
+            'errorCatcher' => $this->errorCatcherEnabled,
             'transactions' => $this->trxEnabled,
             'logging' => $this->loggingEnabled,
             'retry' => $this->retryEnabled,

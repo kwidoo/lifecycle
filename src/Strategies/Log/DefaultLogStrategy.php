@@ -2,11 +2,10 @@
 
 namespace Kwidoo\Lifecycle\Strategies\Log;
 
-use Kwidoo\Lifecycle\Contracts\Features\Loggable;
+use Kwidoo\Lifecycle\Contracts\Factories\LoggableFactory;
 use Kwidoo\Lifecycle\Contracts\Strategies\LogStrategy;
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
 use Kwidoo\Lifecycle\Data\LifecycleResultData;
-use Kwidoo\Lifecycle\Factories\LoggableFactory;
 use Kwidoo\Lifecycle\Features\Log\LogKeyBuilder;
 use Throwable;
 

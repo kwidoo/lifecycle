@@ -2,9 +2,9 @@
 
 namespace Kwidoo\Lifecycle\Middleware;
 
-use Closure;
-use Kwidoo\Lifecycle\Contracts\Authorizers\AuthorizerFactory;
+use Kwidoo\Lifecycle\Contracts\Factories\AuthorizerFactory;
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
+use Closure;
 
 class AuthorizationMiddleware
 {

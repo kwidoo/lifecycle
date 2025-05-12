@@ -5,8 +5,6 @@ namespace Kwidoo\Lifecycle\Strategies\Error;
 use Kwidoo\Lifecycle\Contracts\Features\ErrorReportable;
 use Kwidoo\Lifecycle\Contracts\Strategies\ErrorStrategy;
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
-use Kwidoo\Lifecycle\Factories\LoggableFactory;
-use Kwidoo\Lifecycle\Features\Log\LogKeyBuilder;
 use Throwable;
 
 class DefaultErrorStrategy implements ErrorStrategy

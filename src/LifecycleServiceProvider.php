@@ -4,18 +4,17 @@ namespace Kwidoo\Lifecycle;
 
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\ServiceProvider;
-use Kwidoo\Lifecycle\Authorizers\DefaultAuthorizer;
 use Kwidoo\Lifecycle\Commands\LifecycleSetupCommand;
 use Kwidoo\Lifecycle\Commands\MakeAuthorizerCommand;
-use Kwidoo\Lifecycle\Contracts\Authorizers\Authorizer;
-use Kwidoo\Lifecycle\Contracts\Authorizers\AuthorizerFactory;
+use Kwidoo\Lifecycle\Commands\MakeFlowCommand;
+use Kwidoo\Lifecycle\Contracts\Factories\AuthorizerFactory;
 use Kwidoo\Lifecycle\Contracts\Factories\LoggableFactory;
+use Kwidoo\Lifecycle\Contracts\Features\Authorizer;
 use Kwidoo\Lifecycle\Contracts\Features\Retryable;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Eventable;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Loggable;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Transactional;
 use Kwidoo\Lifecycle\Contracts\Resolvers\AuthorizerResolver;
-use Kwidoo\Lifecycle\Contracts\Resolvers\LifecycleResolver;
 use Kwidoo\Lifecycle\Contracts\Resolvers\StrategyResolver;
 use Kwidoo\Lifecycle\CQRS\Commands\CommandFactory;
 use Kwidoo\Lifecycle\CQRS\Commands\DefaultCommandDispatcher;
@@ -25,13 +24,12 @@ use Kwidoo\Lifecycle\CQRS\Repositories\ReadModelRepositoryFactory;
 use Kwidoo\Lifecycle\Factories\DefaultAuthorizerFactory;
 use Kwidoo\Lifecycle\Factories\DefaultLoggableFactory;
 use Kwidoo\Lifecycle\Factories\LifecycleMiddlewareFactory;
+use Kwidoo\Lifecycle\Features\Authorizers\DefaultAuthorizer;
 use Kwidoo\Lifecycle\Features\Event\DefaultEventable;
 use Kwidoo\Lifecycle\Features\Retry\DefaultRetryable;
 use Kwidoo\Lifecycle\Features\Log\DefaultLoggable;
 use Kwidoo\Lifecycle\Features\Transaction\DefaultTransactional;
 use Kwidoo\Lifecycle\Resolvers\AuthAwareResolver;
-use Kwidoo\Lifecycle\Resolvers\ConfigDrivenStrategyResolver;
-use Kwidoo\Lifecycle\Resolvers\DefaultLifecycleResolver;
 use Kwidoo\Lifecycle\Support\Helpers\LifecycleInstallerService;
 
 class LifecycleServiceProvider extends ServiceProvider
@@ -73,6 +71,7 @@ class LifecycleServiceProvider extends ServiceProvider
             $this->commands([
                 MakeAuthorizerCommand::class,
                 LifecycleSetupCommand::class,
+                MakeFlowCommand::class,
             ]);
         }
     }
