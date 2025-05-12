@@ -3,7 +3,6 @@
 namespace Kwidoo\Lifecycle\Contracts\Features;
 
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
-use Kwidoo\Lifecycle\Data\LifecycleData;
 
 interface Loggable
 {
@@ -11,19 +10,19 @@ interface Loggable
      * Log info message
      *
      * @param string $message
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @param array $context
      * @return void
      */
-    public function logInfo(string $message, LifecycleContextData|LifecycleData $data, array $context = []): void;
+    public function logInfo(string $message, LifecycleContextData $data, array $context = []): void;
 
     /**
      * Log error message
      *
      * @param string $message
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @param array $context
      * @return void
      */
-    public function logError(string $message, LifecycleContextData|LifecycleData $data, array $context = []): void;
+    public function logError(string $message, LifecycleContextData $data, array $context = []): void;
 }

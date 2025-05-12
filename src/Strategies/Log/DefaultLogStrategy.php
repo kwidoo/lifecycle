@@ -2,40 +2,44 @@
 
 namespace Kwidoo\Lifecycle\Strategies\Log;
 
-use Closure;
 use Kwidoo\Lifecycle\Contracts\Features\Loggable;
 use Kwidoo\Lifecycle\Contracts\Strategies\LogStrategy;
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
-use Kwidoo\Lifecycle\Data\LifecycleData;
+use Kwidoo\Lifecycle\Data\LifecycleResultData;
+use Kwidoo\Lifecycle\Factories\LoggableFactory;
 use Kwidoo\Lifecycle\Features\Log\LogKeyBuilder;
+use Throwable;
 
 class DefaultLogStrategy implements LogStrategy
 {
     /**
-     * @param Loggable $loggable
+     * @param LoggableFactory $factory
      * @param LogKeyBuilder $keyBuilder
      */
     public function __construct(
-        protected Loggable $loggable,
+        protected LoggableFactory $factory,
         protected LogKeyBuilder $keyBuilder
     ) {}
 
     /**
      * Execute with logging capability
      *
-     * @param LifecycleContextData|LifecycleData $data
-     * @param Closure $callback
+     * @param LifecycleContextData $data
+     * @param callable $callback
      * @return mixed
      */
-    public function execute(LifecycleContextData|LifecycleData $data, Closure $callback): mixed
+    public function execute(LifecycleContextData $data, callable $callback): mixed
     {
         $this->logBefore($data);
 
         $start = microtime(true);
+
+        /** @var LifecycleResultData */
         $result = $callback();
+
         $duration = microtime(true) - $start;
 
-        $this->logAfter($data, $duration);
+        $this->logAfter($data, $result, $duration);
 
         return $result;
     }
@@ -43,44 +47,60 @@ class DefaultLogStrategy implements LogStrategy
     /**
      * Log error information
      *
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
+     * @param \hrowable|null $exception
      * @return void
      */
-    public function dispatchError(LifecycleContextData|LifecycleData $data): void
+    public function logError(LifecycleContextData $data, ?Throwable $exception = null): void
     {
-        $this->loggable->logError(
-            $this->keyBuilder->buildErrorKey($data->action, $data->resource),
-            $data
+        $key = $this->keyBuilder->buildBeforeKey($data->action, $data->resource);
+
+        $loggable = $this->factory->resolve($key);
+
+        $loggable->logError(
+            $key,
+            $data,
+            (array) $exception,
         );
     }
 
     /**
      * Log the before event
      *
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @return void
      */
-    protected function logBefore(LifecycleContextData|LifecycleData $data): void
+    protected function logBefore(LifecycleContextData $data): void
     {
-        $this->loggable->logInfo(
-            $this->keyBuilder->buildBeforeKey($data->action, $data->resource),
-            $data
+        $key = $this->keyBuilder->buildBeforeKey($data->action, $data->resource);
+
+        $loggable = $this->factory->resolve($key);
+        $loggable->logInfo(
+            $key,
+            $data,
         );
     }
 
     /**
      * Log the after event with duration
      *
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @param float $duration
      * @return void
      */
-    protected function logAfter(LifecycleContextData|LifecycleData $data, float $duration): void
+    protected function logAfter(LifecycleContextData $data, LifecycleResultData $result, float $duration): void
     {
-        $this->loggable->logInfo(
+        $key = $this->keyBuilder->buildBeforeKey($data->action, $data->resource);
+
+        $loggable = $this->factory->resolve($key);
+
+        $loggable->logInfo(
             $this->keyBuilder->buildAfterKey($data->action, $data->resource),
             $data,
-            ['duration' => $duration]
+            [
+                'result' => $result->toArray(),
+                'duration' => $duration
+            ]
         );
     }
 }
