@@ -10,7 +10,7 @@ interface Transactional
      * Execute a callback within a database transaction
      *
      * @param Closure $callback
-     * @return mixed
+     * @return LifecycleResultData
      */
-    public function executeInTransaction(Closure $callback): mixed;
+    public function execute(Closure $callback): mixed;
 }

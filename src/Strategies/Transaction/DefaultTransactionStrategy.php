@@ -21,8 +21,8 @@ class DefaultTransactionStrategy implements TransactionStrategy
      * @param Closure $callback
      * @return mixed
      */
-    public function execute(Closure $callback): mixed
+    public function execute(callable $callback): mixed
     {
-        return $this->transactional->executeInTransaction($callback);
+        return $this->transactional->execute($callback);
     }
 }

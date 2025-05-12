@@ -2,15 +2,13 @@
 
 namespace Kwidoo\Lifecycle\Contracts\Strategies;
 
-use Closure;
-
 interface TransactionStrategy
 {
     /**
      * Execute within a transaction
      *
-     * @param Closure $callback
+     * @param callable $callback
      * @return mixed
      */
-    public function execute(Closure $callback): mixed;
+    public function execute(callable $callback): mixed;
 }

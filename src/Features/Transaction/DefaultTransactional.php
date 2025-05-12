@@ -18,11 +18,13 @@ class DefaultTransactional implements Transactional
     /**
      * Execute a callback within a database transaction
      *
-     * @param Closure $callback
+     * @param callable $callback
      * @return mixed
      */
-    public function executeInTransaction(Closure $callback): mixed
+    public function execute(callable $callback): mixed
     {
-        return $this->connection->transaction(fn() => $callback());
+        return $this->connection->transactionLevel() === 0
+            ? $this->connection->transaction(fn() => $callback())
+            : $callback();
     }
 }
