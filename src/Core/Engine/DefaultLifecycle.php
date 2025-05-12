@@ -8,11 +8,9 @@ use Kwidoo\Lifecycle\Contracts\Lifecycle\Lifecycle;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\LifecycleStrategyResolver;
 use Kwidoo\Lifecycle\CQRS\CQRSService;
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
-use Kwidoo\Lifecycle\Data\LifecycleData;
 use Kwidoo\Lifecycle\Data\LifecycleOptionsData;
 use Kwidoo\Lifecycle\Data\LifecycleResultData;
 use Kwidoo\Lifecycle\Factories\LifecycleMiddlewareFactory;
-use LogicException;
 
 class DefaultLifecycle implements Lifecycle
 {
@@ -27,12 +25,12 @@ class DefaultLifecycle implements Lifecycle
     /**
      * Run the lifecycle for the given data and callback
      *
-     * @param LifecycleContextData|LifecycleData $data Context data or legacy lifecycle data
+     * @param LifecycleContextData $data Context data or legacy lifecycle data
      * @param callable $callback The callback to execute within the lifecycle
      * @param LifecycleOptionsData|null $options Optional settings for this lifecycle execution
      * @return mixed The result of the lifecycle execution
      */
-    public function run(LifecycleContextData|LifecycleData $data, callable $callback, $options = null): mixed
+    public function run(LifecycleContextData $data, callable $callback, $options = null): mixed
     {
         $options ??= new LifecycleOptionsData();
 
@@ -48,11 +46,6 @@ class DefaultLifecycle implements Lifecycle
 
         if ($options->asQuery) {
             return $this->runWithCQRSQuery($data, $callback, $options);
-        }
-
-        // Default legacy flow
-        if ($data instanceof LifecycleData) {
-            return $this->runWithLegacyData($data, $callback, $options);
         }
 
         // Standard flow with LifecycleContextData
@@ -75,13 +68,13 @@ class DefaultLifecycle implements Lifecycle
     /**
      * Run with CQRS Command mode - handle command processing via aggregates
      *
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @param callable $callback Function that creates and dispatches the command (optional in CQRS mode)
      * @param LifecycleOptionsData $options
      * @return mixed
      */
     protected function runWithCQRSCommand(
-        LifecycleContextData|LifecycleData $data,
+        LifecycleContextData $data,
         callable $callback,
         LifecycleOptionsData $options
     ): mixed {
@@ -118,13 +111,13 @@ class DefaultLifecycle implements Lifecycle
     /**
      * Run with CQRS Query mode - bypass most middleware and access read models
      *
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @param callable $callback Function that queries the read model (optional in CQRS mode)
      * @param LifecycleOptionsData $options
      * @return mixed
      */
     protected function runWithCQRSQuery(
-        LifecycleContextData|LifecycleData $data,
+        LifecycleContextData $data,
         callable $callback,
         LifecycleOptionsData $options
     ): mixed {
@@ -198,10 +191,10 @@ class DefaultLifecycle implements Lifecycle
     /**
      * Authorize the lifecycle action using the appropriate authorizer
      *
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @return void
      */
-    protected function authorize(LifecycleContextData|LifecycleData $data): void
+    protected function authorize(LifecycleContextData $data): void
     {
         $resource = $data->resource;
         $action = $data->action;
