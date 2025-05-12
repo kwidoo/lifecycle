@@ -10,6 +10,8 @@ use Kwidoo\Lifecycle\Commands\MakeFlowCommand;
 use Kwidoo\Lifecycle\Contracts\Factories\AuthorizerFactory;
 use Kwidoo\Lifecycle\Contracts\Factories\LoggableFactory;
 use Kwidoo\Lifecycle\Contracts\Features\Authorizer;
+use Kwidoo\Lifecycle\Contracts\Features\Cacheable;
+use Kwidoo\Lifecycle\Contracts\Features\RateLimitable;
 use Kwidoo\Lifecycle\Contracts\Features\Retryable;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Eventable;
 use Kwidoo\Lifecycle\Contracts\Lifecycle\Loggable;
@@ -25,9 +27,11 @@ use Kwidoo\Lifecycle\Factories\DefaultAuthorizerFactory;
 use Kwidoo\Lifecycle\Factories\DefaultLoggableFactory;
 use Kwidoo\Lifecycle\Factories\LifecycleMiddlewareFactory;
 use Kwidoo\Lifecycle\Features\Authorizers\DefaultAuthorizer;
+use Kwidoo\Lifecycle\Features\Cache\DefaultCacheable;
 use Kwidoo\Lifecycle\Features\Event\DefaultEventable;
 use Kwidoo\Lifecycle\Features\Retry\DefaultRetryable;
 use Kwidoo\Lifecycle\Features\Log\DefaultLoggable;
+use Kwidoo\Lifecycle\Features\RateLimit\DefaultRateLimitable;
 use Kwidoo\Lifecycle\Features\Transaction\DefaultTransactional;
 use Kwidoo\Lifecycle\Resolvers\AuthAwareResolver;
 use Kwidoo\Lifecycle\Support\Helpers\LifecycleInstallerService;
@@ -114,6 +118,9 @@ class LifecycleServiceProvider extends ServiceProvider
         $this->app->bind(Eventable::class, DefaultEventable::class);
         $this->app->bind(Loggable::class, DefaultLoggable::class);
         $this->app->bind(Transactional::class, DefaultTransactional::class);
+        $this->app->bind(Cacheable::class, DefaultCacheable::class);
+        $this->app->bind(RateLimitable::class, DefaultRateLimitable::class);
+
 
         // Register CQRS components
         $this->registerCQRSComponents();
