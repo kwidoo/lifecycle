@@ -2,47 +2,34 @@
 
 namespace Kwidoo\Lifecycle\Features\Retry;
 
-use Closure;
 use Kwidoo\Lifecycle\Contracts\Features\Retryable;
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
-use Kwidoo\Lifecycle\Data\LifecycleData;
 use Kwidoo\Lifecycle\Data\LifecycleResultData;
+use Throwable;
 
 class DefaultRetryable implements Retryable
 {
-    /**
-     * Maximum retry attempts
-     */
-    protected int $maxAttempts;
-
-    /**
-     * Delay between retry attempts in milliseconds
-     */
-    protected int $retryDelay;
 
     /**
      * @param int $maxAttempts
      * @param int $retryDelay
      */
-    public function __construct(int $maxAttempts = 3, int $retryDelay = 100)
-    {
-        $this->maxAttempts = $maxAttempts;
-        $this->retryDelay = $retryDelay;
-    }
+    public function __construct(protected int $maxAttempts = 3, protected int $retryDelay = 100) {}
 
     /**
      * Retry a callback on failure
      *
-     * @param LifecycleContextData|LifecycleData $data
-     * @param Closure $callback
+     * @param LifecycleContextData $data
+     * @param callable $callback
      * @return mixed
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function retry(LifecycleContextData|LifecycleData $data, Closure $callback): mixed
+    public function retry(LifecycleContextData $data, callable $callback): LifecycleResultData
     {
         $attempts = 0;
         $lastException = null;
-        $resultData = $data instanceof LifecycleContextData ? new LifecycleResultData() : null;
+        $contextData = $data->withStartTime();
+        $resultData = new LifecycleResultData();
 
         while ($attempts < $this->maxAttempts) {
             $attempts++;
@@ -50,30 +37,19 @@ class DefaultRetryable implements Retryable
             try {
                 $result = $callback();
 
-                // Track attempts in result data if using the new data structure
-                if ($resultData !== null) {
-                    $resultData = $resultData->withResult($result)->incrementRetry();
-                } elseif ($data instanceof LifecycleData) {
-                    // Legacy support - set retry attempts directly
-                    $data->retryAttempts = $attempts;
-                }
-
-                return $result;
-            } catch (\Throwable $e) {
+                return $resultData
+                    ->withResult($result)
+                    ->incrementRetry()
+                    ->complete($contextData->startedAt);
+            } catch (Throwable $e) {
                 $lastException = $e;
 
                 if ($attempts >= $this->maxAttempts) {
                     break;
                 }
 
-                // Sleep between retries (convert milliseconds to microseconds)
-                usleep($this->retryDelay * 1000);
+                usleep($this->retryDelay * 1000); // convert ms to µs
             }
-        }
-
-        // Track the failed attempt in result data if using the new data structure
-        if ($resultData !== null) {
-            $resultData = $resultData->fail()->incrementRetry();
         }
 
         throw $lastException;

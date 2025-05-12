@@ -2,11 +2,9 @@
 
 namespace Kwidoo\Lifecycle\Strategies\Retry;
 
-use Closure;
 use Kwidoo\Lifecycle\Contracts\Features\Retryable;
 use Kwidoo\Lifecycle\Contracts\Strategies\RetryStrategy;
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
-use Kwidoo\Lifecycle\Data\LifecycleData;
 use Kwidoo\Lifecycle\Data\LifecycleResultData;
 
 class DefaultRetryStrategy implements RetryStrategy
@@ -21,11 +19,11 @@ class DefaultRetryStrategy implements RetryStrategy
     /**
      * Execute an operation with retry capability
      *
-     * @param LifecycleContextData|LifecycleData $data
-     * @param Closure $callback
-     * @return mixed
+     * @param LifecycleContextData $data
+     * @param callable $callback
+     * @return LifecycleResultData
      */
-    public function execute(LifecycleContextData|LifecycleData $data, Closure $callback): mixed
+    public function execute(LifecycleContextData $data, callable $callback): mixed
     {
         return $this->retryable->retry($data, $callback);
     }

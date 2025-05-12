@@ -5,7 +5,6 @@ namespace Kwidoo\Lifecycle\Middleware;
 use Closure;
 use Kwidoo\Lifecycle\Contracts\Strategies\RetryStrategy;
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
-use Kwidoo\Lifecycle\Data\LifecycleData;
 
 class RetryMiddleware
 {
@@ -19,12 +18,16 @@ class RetryMiddleware
     /**
      * Handle the lifecycle request with retry capability
      *
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @param Closure $next
      * @return mixed
      */
-    public function handle(LifecycleContextData|LifecycleData $data, Closure $next): mixed
+    public function handle(LifecycleContextData $data, Closure $next): mixed
     {
-        return $this->retryStrategy->execute($data, fn() => $next($data));
+        return $this->retryStrategy
+            ->execute(
+                $data,
+                fn() => $next($data)
+            );
     }
 }
