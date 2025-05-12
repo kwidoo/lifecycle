@@ -5,7 +5,7 @@ namespace Kwidoo\Lifecycle\Middleware;
 use Closure;
 use Kwidoo\Lifecycle\Contracts\Strategies\EventStrategy;
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
-use Kwidoo\Lifecycle\Data\LifecycleData;
+use Kwidoo\Lifecycle\Data\LifecycleResultData;
 
 class EventsMiddleware
 {
@@ -19,12 +19,16 @@ class EventsMiddleware
     /**
      * Handle the lifecycle request
      *
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @param Closure $next
-     * @return mixed
+     * @return LifecycleResultData
      */
-    public function handle(LifecycleContextData|LifecycleData $data, Closure $next): mixed
+    public function handle(LifecycleContextData $data, Closure $next): mixed
     {
-        return $this->eventStrategy->execute($data, fn() => $next($data));
+        return $this->eventStrategy
+            ->execute(
+                $data,
+                fn() => $next($data)
+            );
     }
 }

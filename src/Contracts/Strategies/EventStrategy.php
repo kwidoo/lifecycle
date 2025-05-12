@@ -2,26 +2,25 @@
 
 namespace Kwidoo\Lifecycle\Contracts\Strategies;
 
-use Closure;
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
-use Kwidoo\Lifecycle\Data\LifecycleData;
+use Throwable;
 
 interface EventStrategy
 {
     /**
      * Execute lifecycle events
      *
-     * @param LifecycleContextData|LifecycleData $data
-     * @param Closure $callback
+     * @param LifecycleContextData $data
+     * @param callable $callback
      * @return mixed
      */
-    public function execute(LifecycleContextData|LifecycleData $data, Closure $callback): mixed;
+    public function execute(LifecycleContextData $data, callable $callback): mixed;
 
     /**
      * Dispatch error events
      *
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @return void
      */
-    public function dispatchError(LifecycleContextData|LifecycleData $data): void;
+    public function dispatchError(LifecycleContextData $data, Throwable $exception): void;
 }

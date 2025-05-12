@@ -4,6 +4,8 @@ namespace Kwidoo\Lifecycle\Features\Event;
 
 use Kwidoo\Lifecycle\Contracts\Features\Eventable;
 use Illuminate\Contracts\Events\Dispatcher;
+use Kwidoo\Lifecycle\Data\LifecycleContextData;
+use Throwable;
 
 class DefaultEventable implements Eventable
 {
@@ -13,47 +15,24 @@ class DefaultEventable implements Eventable
      */
     public function __construct(
         protected Dispatcher $events,
-        protected EventKeyBuilder $keyBuilder
     ) {}
 
     /**
      * Dispatch an event with the given key and payload
      *
      * @param string $eventKey
-     * @param mixed $payload
+     * @param LifecycleContextData $payload
      * @return void
      */
-    public function dispatch(string $eventKey, mixed $payload): void
+    public function dispatch(string $eventKey, LifecycleContextData $data, array $context = []): void
     {
-        $this->events->dispatch($eventKey, $payload);
-    }
-
-    /**
-     * Dispatch a 'before' event for the given action and resource
-     *
-     * @param string $action
-     * @param string $resource
-     * @param mixed $payload
-     * @return void
-     */
-    public function dispatchBeforeEvent(string $action, string $resource, mixed $payload): void
-    {
-        $eventKey = $this->keyBuilder->buildBeforeKey($action, $resource);
-        $this->dispatch($eventKey, $payload);
-    }
-
-    /**
-     * Dispatch an 'after' event for the given action and resource
-     *
-     * @param string $action
-     * @param string $resource
-     * @param mixed $payload
-     * @return void
-     */
-    public function dispatchAfterEvent(string $action, string $resource, mixed $payload): void
-    {
-        $eventKey = $this->keyBuilder->buildAfterKey($action, $resource);
-        $this->dispatch($eventKey, $payload);
+        $this->events->dispatch(
+            $eventKey,
+            payload: array_merge(
+                $data->toArray(),
+                $context
+            ),
+        );
     }
 
     /**
@@ -65,9 +44,12 @@ class DefaultEventable implements Eventable
      * @param \Throwable $exception
      * @return void
      */
-    public function dispatchErrorEvent(string $action, string $resource, mixed $payload, \Throwable $exception): void
+    public function dispatchError(string $eventKey, LifecycleContextData $data, Throwable $exception): void
     {
-        $eventKey = $this->keyBuilder->buildErrorKey($action, $resource);
-        $this->dispatch($eventKey, ['payload' => $payload, 'exception' => $exception]);
+        $this->dispatch(
+            eventKey: $eventKey,
+            data: $data,
+            context: (array) $exception
+        );
     }
 }

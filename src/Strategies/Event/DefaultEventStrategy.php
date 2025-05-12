@@ -5,9 +5,9 @@ namespace Kwidoo\Lifecycle\Strategies\Event;
 use Kwidoo\Lifecycle\Contracts\Features\Eventable;
 use Kwidoo\Lifecycle\Contracts\Strategies\EventStrategy;
 use Kwidoo\Lifecycle\Data\LifecycleContextData;
-use Kwidoo\Lifecycle\Data\LifecycleData;
 use Kwidoo\Lifecycle\Data\LifecycleResultData;
 use Kwidoo\Lifecycle\Features\Event\EventKeyBuilder;
+use Throwable;
 
 class DefaultEventStrategy implements EventStrategy
 {
@@ -23,49 +23,44 @@ class DefaultEventStrategy implements EventStrategy
     /**
      * Execute with event dispatching
      *
-     * @param LifecycleContextData|LifecycleData $data
-     * @param \Closure $callback
-     * @return mixed
+     * @param LifecycleContextData $data
+     * @param callable $callback
+     * @return LifecycleResultData
      */
-    public function execute(LifecycleContextData|LifecycleData $data, \Closure $callback): mixed
+    public function execute(LifecycleContextData $data, callable $callback): mixed
     {
         $this->dispatchBefore($data);
 
+        /** @var LifecycleResultData */
         $result = $callback();
 
-        // Handle assignment of result based on data type
-        if ($data instanceof LifecycleData) {
-            $data->result = $result;
-        }
+        $this->dispatchAfter($data, $result);
 
-        $this->dispatchAfter($data);
         return $result;
     }
 
     /**
      * Dispatch error events
      *
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @return void
      */
-    public function dispatchError(LifecycleContextData|LifecycleData $data): void
+    public function dispatchError(LifecycleContextData $data, Throwable $exception): void
     {
-        // Get the result if available (LifecycleData) or null (LifecycleContextData)
-        $result = $data instanceof LifecycleData ? $data->result : null;
-
-        $this->eventable->dispatch(
-            $this->keyBuilder->buildErrorKey($data->action, $data->resource),
-            $result
+        $this->eventable->dispatchError(
+            eventKey: $this->keyBuilder->buildErrorKey($data->action, $data->resource),
+            data: $data,
+            exception: $exception
         );
     }
 
     /**
      * Dispatch before events
      *
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @return void
      */
-    protected function dispatchBefore(LifecycleContextData|LifecycleData $data): void
+    protected function dispatchBefore(LifecycleContextData $data): void
     {
         $this->eventable->dispatch(
             $this->keyBuilder->buildBeforeKey($data->action, $data->resource),
@@ -76,14 +71,15 @@ class DefaultEventStrategy implements EventStrategy
     /**
      * Dispatch after events
      *
-     * @param LifecycleContextData|LifecycleData $data
+     * @param LifecycleContextData $data
      * @return void
      */
-    protected function dispatchAfter(LifecycleContextData|LifecycleData $data): void
+    protected function dispatchAfter(LifecycleContextData $data, LifecycleResultData $result): void
     {
         $this->eventable->dispatch(
             $this->keyBuilder->buildAfterKey($data->action, $data->resource),
-            $data->context
+            $data,
+            $result->toArray()
         );
     }
 }
